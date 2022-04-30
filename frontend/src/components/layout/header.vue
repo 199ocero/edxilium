@@ -1092,6 +1092,7 @@
                 .then(function () {
                     
                     localStorage.removeItem('token');
+                    localStorage.removeItem('role');
                     self.$router.push({name:'login'});
                 })
                 .catch(function (error) {

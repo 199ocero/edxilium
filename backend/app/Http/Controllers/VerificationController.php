@@ -21,13 +21,16 @@ class VerificationController extends Controller
         return redirect()->to('/');
     }
     
-    public function resend() {
-        if (auth()->user()->hasVerifiedEmail()) {
-            return response()->json(["msg" => "Email already verified."], 400);
+    public function resend($id) {
+        $user = User::findOrFail($id);
+
+        if ($user->hasVerifiedEmail()) {
+            return response()->json(["message" => "Email already verified."], 400);
+        }else{
+            $user->sendEmailVerificationNotification();
+            return response()->json(["message" => "Email verification link sent on your email."]);
         }
     
-        auth()->user()->sendEmailVerificationNotification();
-    
-        return response()->json(["msg" => "Email verification link sent on your email."]);
+        
     }
 }

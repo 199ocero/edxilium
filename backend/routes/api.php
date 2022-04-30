@@ -38,6 +38,10 @@ Route::group(['middleware'=>['auth:sanctum','verified']],function(){
     // Admin Logout
     Route::post('/user/logout',[AuthController::class,'logout']);
     
+    
+
+    Route::get('email/resend/{id}', [VerificationController::class,'resend'])->name('verification.resend');
+
     // Create instructor
     Route::post('/instructor',[InstructorController::class,'store']);
     // Get all instructor
@@ -106,7 +110,6 @@ Route::group(['middleware'=>['auth:sanctum','verified']],function(){
 
    
 });
+
  // Email Verification
  Route::get('email/verify/{id}', [VerificationController::class,'verify'])->name('verification.verify'); // Make sure to keep this as your route name
-
-//  Route::get('email/resend', [VerificationController::class,'resend'])->name('verification.resend');

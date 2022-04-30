@@ -70,6 +70,7 @@
                 //  console.log(response)
                 // console.log(response.data)
                  localStorage.setItem('token',response.data.token)
+                 localStorage.setItem('role',response.data.role)
                  this.$router.push({name:'Home'}).catch(()=>{}); 
              }).catch((errors) =>{
                     // console.log(errors.response.data.errors);

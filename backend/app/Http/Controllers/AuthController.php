@@ -76,6 +76,7 @@ class AuthController extends Controller
                     $response = [
                         'message' => 'Admin login successfully!',
                         'data' => $user,
+                        'role' => 'admin',
                         'token' => $token
                     ];
                     return response($response,200);
@@ -83,6 +84,7 @@ class AuthController extends Controller
                     $response = [
                         'message' => 'Instructor login successfully!',
                         'data' => $user,
+                        'role' => 'instructor',
                         'token' => $token
                     ];
                     return response($response,200);

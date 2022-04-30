@@ -18,14 +18,24 @@ class InstructorController extends Controller
      */
     public function index()
     {
-        // $instructor = User::latest()->get();
-        $instructor = User::where('role','instructor')->latest()->get();
-        $response = [
-            'message' => 'Fetch all data successfully!',
-            'data' => $instructor
-        ];
+        $user = auth()->user();
+        $user = $user->role;
+        if($user=='admin'){
+            $instructor = User::where('role','instructor')->latest()->get();
+            $response = [
+                'message' => 'Fetch all data successfully!',
+                'data' => $instructor
+            ];
+            return response($response,200);
+        }else{
+            $response = [
+                'message' => 'User unauthorized.',
+            ];
+            return response($response,401);
+        }
+       
 
-        return response($response,200);
+        
     }
 
     /**
@@ -36,6 +46,9 @@ class InstructorController extends Controller
      */
     public function store(Request $request)
     {
+        $user = auth()->user();
+        $user = $user->role;
+
         // Create instructor account and save to users table
         // Only the instructors ID is save in instructors table
         $password = Str::random(30);
@@ -44,28 +57,36 @@ class InstructorController extends Controller
             'role' => 'required|string',
             'email' => 'required|unique:users,email|string',
         ]);
-        $instructor = User::create([
-            'role' => $data['role'],
-            'email' => $data['email'],
-            'password' => bcrypt($password),
-        ]);
-        Instructor::create([
-            'instructor_id' => $instructor->id,
-        ]);
-        $token = $instructor->createToken('token')->plainTextToken;
-        $response = [
-            'message' => 'Instructor created successfully!',
-            'data' => $instructor,
-            'token' => $token
-        ];
-
-        $email = $data['email'];
-
-        $instructor->sendEmailVerificationNotification();
-        Mail::to($data['email'])->send(new Credentials($email,$password));
-
-
-        return response($response,201);
+        if($user=='admin'){
+            $instructor = User::create([
+                'role' => $data['role'],
+                'email' => $data['email'],
+                'password' => bcrypt($password),
+            ]);
+            Instructor::create([
+                'instructor_id' => $instructor->id,
+            ]);
+            $token = $instructor->createToken('token')->plainTextToken;
+            $response = [
+                'message' => 'Instructor created successfully!',
+                'data' => $instructor,
+                'token' => $token
+            ];
+    
+            $email = $data['email'];
+    
+            $instructor->sendEmailVerificationNotification();
+            Mail::to($data['email'])->send(new Credentials($email,$password));
+    
+    
+            return response($response,201);
+        }else{
+            $response = [
+                'message' => 'User unauthorized.',
+            ];
+            return response($response,401);
+        }
+        
         
     }
 
@@ -77,13 +98,23 @@ class InstructorController extends Controller
      */
     public function show($id)
     {
-        $instructor = Instructor::where('instructor_id',$id)->first();
-        $response = [
-            'message' => 'Fetch specific instructor successfully!',
-            'data' => $instructor,
-        ];
+        $user = auth()->user();
+        $user = $user->role;
+        if($user=='admin'){
+            $instructor = Instructor::where('instructor_id',$id)->first();
+            $response = [
+                'message' => 'Fetch specific instructor successfully!',
+                'data' => $instructor,
+            ];
 
-        return response($response,200);
+            return response($response,200);
+        }else{
+            $response = [
+                'message' => 'User unauthorized.',
+            ];
+            return response($response,401);
+        }
+        
     }
 
     /**
@@ -95,15 +126,25 @@ class InstructorController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $instructor = Instructor::find($id);
-        $instructor->update($request->all());
-
-        $response = [
-            'message' => 'Instructor updated successfully!',
-            'data' => $instructor,
-        ];
-
-        return response($response,200);
+        $user = auth()->user();
+        $user = $user->role;
+        if($user=='admin'){
+            $instructor = Instructor::find($id);
+            $instructor->update($request->all());
+    
+            $response = [
+                'message' => 'Instructor updated successfully!',
+                'data' => $instructor,
+            ];
+    
+            return response($response,200);
+        }else{
+            $response = [
+                'message' => 'User unauthorized.',
+            ];
+            return response($response,401);
+        }
+       
     }
 
     /**
@@ -114,19 +155,29 @@ class InstructorController extends Controller
      */
     public function destroy($id)
     {
-        $instructor = Instructor::where('instructor_id',$id)->delete();
-        $user = User::destroy($id);
+        $user = auth()->user();
+        $user = $user->role;
+        if($user=='admin'){
+            $instructor = Instructor::where('instructor_id',$id)->delete();
+            $user = User::destroy($id);
 
-        if($instructor==0 && $user==0){
-            $response = [
-                'message' => 'Instructor not found.'
-            ];
+            if($instructor==0 && $user==0){
+                $response = [
+                    'message' => 'Instructor not found.'
+                ];
+            }else{
+                $response = [
+                    'message' => 'Instructor deleted successfully!'
+                ];
+            }
+            return response($response,200);
         }else{
             $response = [
-                'message' => 'Instructor deleted successfully!'
+                'message' => 'User unauthorized.',
             ];
+            return response($response,401);
         }
-        return response($response,200);
+        
 
     }
     

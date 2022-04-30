@@ -61,8 +61,12 @@
                                 </b-badge>
                             </template>
                             <template #cell(action)="data">
+                                
                                    <!-- <a href="javascript:void(0);" v-b-tooltip title="Settings"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-settings text-primary"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></a> -->
-                                   <a style="margin-right:10px" v-b-modal.instructorEditModal @click="editInstructor(data.item.id)" href="javascript:void(0);" v-b-tooltip title="Edit"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-2 text-success"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg></a>
+                                   <a style="margin-right:10px" v-b-modal.instructorEditModal @click="editInstructor(data.item.id)" href="javascript:void(0);" v-b-tooltip title="Edit"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-2 text-dark"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg></a>
+                                   <a style="margin-right:10px" @click="resendEmail(data.item.id)" href="javascript:void(0);" v-b-tooltip title="Resend Verification">
+                                       <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="text-info"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                                   </a>
                                    <a style="margin-right:10px" href="javascript:void(0);" v-b-tooltip title="Disable">
                                        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
                                    </a>
@@ -264,7 +268,6 @@
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
                             }
                         }).then(() =>{
-                                this.$Progress.start()
                                 this.$swal.fire(
                                     'Deleted!',
                                     'Instructor account has been deleted.',
@@ -338,6 +341,44 @@
                     console.log(error);
                 });
 
+            },
+            resendEmail(id){
+                this.$swal.fire({
+                    title: 'Are you sure?',
+                    text: "This will resend an email verification to this user.",
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, send it!'
+                    }).then((result) => {
+                    if (result.isConfirmed) {
+                        
+                        // Resend email
+                        this.$Progress.start()
+                        this.$http.get('/api/email/resend/'+id,{
+                            headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                            }
+                        }).then(() =>{
+                                this.$swal.fire(
+                                    'Sent!',
+                                    'Email verification sent!',
+                                    'success'
+                                )
+                                 this.bind_data();
+                                 this.$Progress.finish();
+                            }).catch(() =>{
+
+                                 this.$swal.fire(
+                                     'Failed!','There was something wrong.','warning'
+                                )
+                                this.$Progress.fail()
+                        })
+
+                        
+                    }
+                })
             },
             on_filtered(filtered_items) {
                 this.refresh_table(filtered_items.length);
