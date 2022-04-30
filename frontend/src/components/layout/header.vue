@@ -1073,17 +1073,6 @@
                 this.$appSetting.toggleLanguage(item);
             },
             logout(){
-                // this.$http.post('/api/admin/logout',{
-                //     headers: {
-                //        'Accept': 'application/json',
-                //       'Authorization': 'Bearer '+ localStorage.getItem('token')
-                //       }
-                // }).then(() =>{
-                //         localStorage.removeItem('token');
-                //         this.$router.push({name:'login'});
-                //     }).catch((errors) =>{
-                //         console.log(errors);
-                // })
                 let self = this
                 var axios = require('axios');
                 var qs = require('qs');
@@ -1092,7 +1081,7 @@
                 });
                 var config = {
                 method: 'post',
-                url: '/api/admin/logout',
+                url: '/api/user/logout',
                 headers: { 
                     'Authorization': 'Bearer '+localStorage.getItem('token')
                 },

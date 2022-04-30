@@ -6,6 +6,7 @@ use App\Models\Instructor;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -62,26 +63,38 @@ class AuthController extends Controller
         $user = User::where('email',$data['email'])->first();
         
         if(!$user || !Hash::check($data['password'],$user->password)){
+            throw ValidationException::withMessages([
+                'email' => 'The provided credentials are incorrect.'
+            ]);
             return response([
-                'message' => 'Wrong credentials.'
+                'message' => 'The provided credentials are incorrect.'
             ],401);
-        }
-        $token = $user->createToken('token')->plainTextToken;
-        if($user->role=='admin'){
-            $response = [
-                'message' => 'Admin login successfully!',
-                'data' => $user,
-                'token' => $token
-            ];
-            return response($response,200);
         }else{
-            $response = [
-                'message' => 'Instructor login successfully!',
-                'data' => $user,
-                'token' => $token
-            ];
-            return response($response,200);
+            if($user->hasVerifiedEmail()){
+                $token = $user->createToken('token')->plainTextToken;
+                if($user->role=='admin'){
+                    $response = [
+                        'message' => 'Admin login successfully!',
+                        'data' => $user,
+                        'token' => $token
+                    ];
+                    return response($response,200);
+                }else{
+                    $response = [
+                        'message' => 'Instructor login successfully!',
+                        'data' => $user,
+                        'token' => $token
+                    ];
+                    return response($response,200);
+                }
+            }else{
+                throw ValidationException::withMessages([
+                    'verified' => 'The email address is not verified. Please contact your school administrator.'
+                ]);
+            }
         }
+
+        
        
         
     }

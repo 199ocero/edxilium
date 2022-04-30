@@ -14,5 +14,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    // change the away url when deployed to real server
+    return redirect()->away('http://localhost:8080/');
 });

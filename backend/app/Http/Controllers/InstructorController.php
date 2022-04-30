@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\Credentials;
 use App\Models\User;
 use App\Models\Instructor;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class InstructorController extends Controller
 {
@@ -33,29 +36,37 @@ class InstructorController extends Controller
      */
     public function store(Request $request)
     {
+        // Create instructor account and save to users table
+        // Only the instructors ID is save in instructors table
+        $password = Str::random(30);
+
         $data = $request->validate([
-            'first_name' => 'required|string',
-            'middle_name' => 'required|string',
-            'last_name' => 'required|string',
-            'age' => 'required|string',
-            'gender' => 'required|string',
-            'contact_number' => 'required|string',
+            'role' => 'required|string',
+            'email' => 'required|unique:users,email|string',
         ]);
-        $instructor = Instructor::create([
-            'first_name' => $data['first_name'],
-            'middle_name' => $data['middle_name'],
-            'last_name' => $data['last_name'],
-            'age' => $data['age'],
-            'gender' => $data['gender'],
-            'contact_number' => $data['contact_number'],
+        $instructor = User::create([
+            'role' => $data['role'],
             'email' => $data['email'],
-            'password' => bcrypt($data['password']),
+            'password' => bcrypt($password),
         ]);
+        Instructor::create([
+            'instructor_id' => $instructor->id,
+        ]);
+        $token = $instructor->createToken('token')->plainTextToken;
         $response = [
             'message' => 'Instructor created successfully!',
             'data' => $instructor,
+            'token' => $token
         ];
+
+        $email = $data['email'];
+
+        $instructor->sendEmailVerificationNotification();
+        Mail::to($data['email'])->send(new Credentials($email,$password));
+
+
         return response($response,201);
+        
     }
 
     /**
@@ -103,9 +114,10 @@ class InstructorController extends Controller
      */
     public function destroy($id)
     {
-        $instructor = Instructor::destroy($id);
+        $instructor = Instructor::where('instructor_id',$id)->delete();
+        $user = User::destroy($id);
 
-        if($instructor==0){
+        if($instructor==0 && $user==0){
             $response = [
                 'message' => 'Instructor not found.'
             ];

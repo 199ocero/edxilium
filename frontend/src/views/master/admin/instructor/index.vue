@@ -62,7 +62,10 @@
                             </template>
                             <template #cell(action)="data">
                                    <!-- <a href="javascript:void(0);" v-b-tooltip title="Settings"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-settings text-primary"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></a> -->
-                                   <a v-b-modal.instructorEditModal @click="editInstructor(data.item.id)" href="javascript:void(0);" v-b-tooltip title="Edit"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-2 text-success"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg></a>
+                                   <a style="margin-right:10px" v-b-modal.instructorEditModal @click="editInstructor(data.item.id)" href="javascript:void(0);" v-b-tooltip title="Edit"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-2 text-success"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg></a>
+                                   <a style="margin-right:10px" href="javascript:void(0);" v-b-tooltip title="Disable">
+                                       <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
+                                   </a>
                                    <a @click="deleteInstructor(data.item.id)" href="javascript:void(0);" v-b-tooltip title="Delete"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2 text-danger"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></a>
                             </template>
                         </b-table>
@@ -89,7 +92,7 @@
                     </div>
                 </div>
             </div>
-
+        <vue-progress-bar></vue-progress-bar>
     </div>
     <!--Add Modal for Instructor -->
     <b-modal id="instructorModal" title="Add Instructor Account" centered hide-footer  @show="registerResetModal" @hidden="registerResetModal">
@@ -97,14 +100,6 @@
                 <b-form-group label="Email Address">
                     <b-input v-model="form.email" name="email" type="email" placeholder="Email Address"></b-input>
                         <span class="text-danger" v-text="errors.get('email')"></span>
-                </b-form-group>
-                <b-form-group label="Password">
-                    <b-input v-model="form.password" name="password" type="password" placeholder="Password"></b-input>
-                        <span class="text-danger" v-text="errors.get('password')"></span>
-                </b-form-group>
-                <b-form-group label="Password Confirmation">
-                    <b-input v-model="form.password_confirmation" name="password_confirmation" type="password" placeholder="Password Confirmation"></b-input>
-                        <span class="text-danger" v-text="errors.get('password_confirmation')"></span>
                 </b-form-group>
             <hr>
             <div class="d-flex flex-wrap justify-content-center justify-content-sm-end">
@@ -120,7 +115,7 @@
             <b-input hidden v-model="form.email"></b-input>
             <b-form-row class="mb-4">
                 <b-form-group label="First Name" class="col-md-4">
-                    <b-input id="first_name" v-model="form.first_name" name="first_name" type="text" placeholder="First Name"></b-input>
+                    <b-input v-model="form.first_name" name="first_name" type="text" placeholder="First Name"></b-input>
                     <span class="text-danger" v-text="errors.get('first_name')"></span>
                 </b-form-group>
                 <b-form-group label="Middle Name" class="col-md-4">
@@ -173,6 +168,7 @@
             return {
               form:{
                     id:'',
+                    role:'instructor',
                     first_name: '',
                     middle_name: '',
                     last_name: '',
@@ -200,7 +196,7 @@
         },
         methods: {
             bind_data() {
-                this.columns = ["username","email","status","action"];
+                this.columns = ["role","email","status","action"];
                 
                 let fetchTodo = async () => {
                     this.items = [];
@@ -228,24 +224,21 @@
                       'Authorization': `Bearer ${localStorage.getItem('token')}`
                       }
                 }).then(() =>{
+                        
                         this.$toaster.success('Instructor Created Successfuly!')
                         this.$nextTick(() => {
                             this.$bvModal.hide('instructorModal')
                         })
                         this.bind_data();
                         this.$Progress.finish();
+                        this.$swal.fire("Email Sent", "Email verification and credentials are sent!", "success");
                     }).catch((errors) =>{
                         this.errors.record(errors.response.data.errors);
+                        this.$Progress.fail()
                 })
                 
             },
             registerResetModal(){
-                this.form.first_name='';
-                this.form.middle_name='';
-                this.form.last_name='';
-                this.form.age='';
-                this.form.gender='';
-                this.form.contact_number='';
                 this.form.email='';
                 this.form.password='';
                 this.form.password_confirmation='';
@@ -299,7 +292,6 @@
                       }
                 }).then((response) =>{
                         this.form.id= response.data.data.id;
-                        this.form.email= response.data.data.email;
                         this.form.first_name= response.data.data.first_name;
                         this.form.middle_name= response.data.data.middle_name;
                         this.form.last_name= response.data.data.last_name;

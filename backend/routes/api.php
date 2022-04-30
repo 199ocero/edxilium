@@ -33,7 +33,7 @@ Route::post('/user/login',[AuthController::class,'login']);
 
 
 /* Private Routes*/
-Route::group(['middleware'=>['auth:sanctum']],function(){
+Route::group(['middleware'=>['auth:sanctum','verified']],function(){
 
     // Admin Logout
     Route::post('/user/logout',[AuthController::class,'logout']);
@@ -104,8 +104,9 @@ Route::group(['middleware'=>['auth:sanctum']],function(){
     // Delete specific section
     Route::delete('/school-year/{id}',[SchoolYearController::class,'destroy']);
 
-    //Email Verification
-    // Route::get('email/verify/{id}', [VerificationController::class,'verify'])->name('verification.verify'); // Make sure to keep this as your route name
-
-    // Route::get('email/resend', [VerificationController::class,'resend'])->name('verification.resend');
+   
 });
+ // Email Verification
+ Route::get('email/verify/{id}', [VerificationController::class,'verify'])->name('verification.verify'); // Make sure to keep this as your route name
+
+//  Route::get('email/resend', [VerificationController::class,'resend'])->name('verification.resend');

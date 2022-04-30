@@ -59,14 +59,14 @@ Vue.use(Toaster, {timeout: 5000})
 // Progress Bar
 import VueProgressBar from 'vue-progressbar'
 
-const option = {
+const optionss = {
   color: 'rgb(143, 255, 199)',
   failedColor: '#F76B61',
   thickness: '5px',
   location: 'top',
 }
 
-Vue.use(VueProgressBar, option)
+Vue.use(VueProgressBar, optionss)
 
 
 import axios from 'axios'
