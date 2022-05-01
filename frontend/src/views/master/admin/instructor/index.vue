@@ -52,12 +52,20 @@
 
                         <b-table ref="basic_table" responsive hover :items="items" :fields="columns" :per-page="table_option.page_size" :current-page="table_option.current_page" :filter="table_option.search_text"
                                  sort-by="name" :show-empty="true" @filtered="on_filtered">
-                            <template #cell(status)="data">
+                            <template #cell(email_status)="data">
                                 <b-badge variant="success" class="mr-1" v-if="data.item.email_verified_at!=null">
                                      Verified
                                 </b-badge>
                                 <b-badge variant="secondary" class="mr-1" v-else>
                                      Pending
+                                </b-badge>
+                            </template>
+                            <template #cell(account)="data">
+                                <b-badge variant="success" class="mr-1" v-if="data.item.status=='activated'">
+                                     Activated
+                                </b-badge>
+                                <b-badge variant="danger" class="mr-1" v-else>
+                                     Deactivated
                                 </b-badge>
                             </template>
                             <template #cell(action)="data">
@@ -67,8 +75,11 @@
                                    <a style="margin-right:10px" v-if="data.item.email_verified_at==null" @click="resendEmail(data.item.id)" href="javascript:void(0);" v-b-tooltip title="Resend Verification">
                                        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="text-info"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                                    </a>
-                                   <a style="margin-right:10px" href="javascript:void(0);" v-b-tooltip title="Disable">
+                                   <a style="margin-right:10px" v-if="data.item.status=='activated'" href="javascript:void(0);" v-b-tooltip title="Deactivate" @click="deactivateInstructor(data.item.id)">
                                        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
+                                   </a>
+                                   <a style="margin-right:10px" v-if="data.item.status=='deactivated'" href="javascript:void(0);" v-b-tooltip title="Activate" @click="activateInstructor(data.item.id)">
+                                       <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>
                                    </a>
                                    <a @click="deleteInstructor(data.item.id)" href="javascript:void(0);" v-b-tooltip title="Delete"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2 text-danger"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></a>
                             </template>
@@ -173,6 +184,7 @@
               form:{
                     id:'',
                     role:'instructor',
+                    status:'',
                     first_name: '',
                     middle_name: '',
                     last_name: '',
@@ -210,7 +222,7 @@
         },
         methods: {
             bind_data() {
-                this.columns = ["role","email","status","action"];
+                this.columns = ["role","email","email_status","account","action"];
                 
                 let fetchTodo = async () => {
                     this.items = [];
@@ -223,15 +235,8 @@
                         this.items = res.data.data
                         this.table_option.total_rows = this.items.length;
                         this.get_meta();
-                    }).catch(() =>{
-                        if(localStorage.getItem('role')!='admin'){
-                            this.$router.push({ name: 'Home'});
-                            this.$swal.fire(
-                            'Unauthorized',
-                            'You are not allowed to view this page!',
-                            'warning'
-                            )
-                        }
+                    }).catch((errors) =>{
+                        console.log(errors);
                 })
               };
 
@@ -397,6 +402,94 @@
                         
                     }
                 })
+            },
+            deactivateInstructor(id){
+                this.$swal.fire({
+                    title: 'Are you sure?',
+                    text: "This user will be deactivated.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, deactivate it!'
+                    }).then((result) => {
+                    if (result.isConfirmed) {
+                        let self = this
+                        var axios = require('axios');
+                        var data =  this.form;
+                        var config = {
+                        method: 'put',
+                        url: '/api/instructor/disable/'+id,
+                        headers: { 
+                            'Authorization': 'Bearer '+localStorage.getItem('token')
+                        },
+                        data : data
+                        };
+                        self.$Progress.start()
+                        axios(config)
+                        .then(function () {
+                                self.$swal.fire(
+                                    'Success!',
+                                    'Account deactivated successfully!',
+                                    'success'
+                                )
+                                self.bind_data();
+                                self.$Progress.finish();
+                        })
+                        .catch(function () {
+                             self.$swal.fire(
+                                     'Failed!','There was something wrong.','warning'
+                                )
+                                self.$Progress.fail()
+                        });
+                        
+                    }
+                })
+                
+            },
+            activateInstructor(id){
+                this.$swal.fire({
+                    title: 'Are you sure?',
+                    text: "This user will be activated.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, activate it!'
+                    }).then((result) => {
+                    if (result.isConfirmed) {
+                        let self = this
+                        var axios = require('axios');
+                        var data =  this.form;
+                        var config = {
+                        method: 'put',
+                        url: '/api/instructor/activate/'+id,
+                        headers: { 
+                            'Authorization': 'Bearer '+localStorage.getItem('token')
+                        },
+                        data : data
+                        };
+                        self.$Progress.start()
+                        axios(config)
+                        .then(function () {
+                                self.$swal.fire(
+                                    'Success!',
+                                    'Account activated successfully!',
+                                    'success'
+                                )
+                                self.bind_data();
+                                self.$Progress.finish();
+                        })
+                        .catch(function () {
+                             self.$swal.fire(
+                                     'Failed!','There was something wrong.','warning'
+                                )
+                                self.$Progress.fail()
+                        });
+                        
+                    }
+                })
+                
             },
             on_filtered(filtered_items) {
                 this.refresh_table(filtered_items.length);

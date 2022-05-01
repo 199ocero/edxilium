@@ -54,6 +54,9 @@ Route::group(['middleware'=>['auth:sanctum','verified']],function(){
     Route::put('/instructor/{id}',[InstructorController::class,'update']);
     // Delete specific instructor
     Route::delete('/instructor/{id}',[InstructorController::class,'destroy']);
+    // Disable instructor
+    Route::put('/instructor/disable/{id}',[InstructorController::class,'disable']);
+    Route::put('/instructor/activate/{id}',[InstructorController::class,'activate']);
 
     // Create student
     Route::post('/student',[StudentController::class,'store']);

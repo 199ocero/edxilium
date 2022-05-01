@@ -51,11 +51,6 @@ export default {
         localStorage.setItem('role',response.data.role);
         if(localStorage.getItem('role')!='admin'){
         this.$router.push({ name: 'Home'});
-        this.$swal.fire(
-        'Unauthorized',
-        'You are not allowed to view this page!',
-        'warning'
-        )
     }
     }).catch((errors) =>{
         console.log(errors);

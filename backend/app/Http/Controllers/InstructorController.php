@@ -59,6 +59,7 @@ class InstructorController extends Controller
         ]);
         if($user=='admin'){
             $instructor = User::create([
+                'status'=> 'activated',
                 'role' => $data['role'],
                 'email' => $data['email'],
                 'password' => bcrypt($password),
@@ -179,6 +180,48 @@ class InstructorController extends Controller
         }
         
 
+    }
+    public function disable($id){
+        $user = auth()->user();
+        $user = $user->role;
+        if($user=='admin'){
+            $instructor = User::find($id);
+            $instructor->status='deactivated';
+            $instructor->update();
+    
+            $response = [
+                'message' => 'Instructor deactivated successfully!',
+                'data' => $instructor,
+            ];
+    
+            return response($response,200);
+        }else{
+            $response = [
+                'message' => 'User unauthorized.',
+            ];
+            return response($response,401);
+        }
+    }
+    public function activate($id){
+        $user = auth()->user();
+        $user = $user->role;
+        if($user=='admin'){
+            $instructor = User::find($id);
+            $instructor->status='activated';
+            $instructor->update();
+    
+            $response = [
+                'message' => 'Instructor activated successfully!',
+                'data' => $instructor,
+            ];
+    
+            return response($response,200);
+        }else{
+            $response = [
+                'message' => 'User unauthorized.',
+            ];
+            return response($response,401);
+        }
     }
     
 }

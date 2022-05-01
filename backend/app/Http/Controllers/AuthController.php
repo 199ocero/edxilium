@@ -71,24 +71,31 @@ class AuthController extends Controller
             ],401);
         }else{
             if($user->hasVerifiedEmail()){
-                $token = $user->createToken('token')->plainTextToken;
-                if($user->role=='admin'){
-                    $response = [
-                        'message' => 'Admin login successfully!',
-                        'data' => $user,
-                        'role' => 'admin',
-                        'token' => $token
-                    ];
-                    return response($response,200);
+                if($user->status == 'activated'){
+                    $token = $user->createToken('token')->plainTextToken;
+                    if($user->role=='admin'){
+                        $response = [
+                            'message' => 'Admin login successfully!',
+                            'data' => $user,
+                            'role' => 'admin',
+                            'token' => $token
+                        ];
+                        return response($response,200);
+                    }else{
+                        $response = [
+                            'message' => 'Instructor login successfully!',
+                            'data' => $user,
+                            'role' => 'instructor',
+                            'token' => $token
+                        ];
+                        return response($response,200);
+                    }
                 }else{
-                    $response = [
-                        'message' => 'Instructor login successfully!',
-                        'data' => $user,
-                        'role' => 'instructor',
-                        'token' => $token
-                    ];
-                    return response($response,200);
+                    throw ValidationException::withMessages([
+                        'account' => 'Your account is deactivated. Please contact your school administrator.'
+                    ]);
                 }
+                
             }else{
                 throw ValidationException::withMessages([
                     'verified' => 'The email address is not verified. Please contact your school administrator.'
