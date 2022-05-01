@@ -16,7 +16,7 @@
         }"
       >
         <!-- Dashboard -->
-        <router-link
+        <router-link 
           tag="li"
           to="/"
           class="menu"
@@ -30,7 +30,7 @@
           </a>
         </router-link>
         <!-- Admin Instructor -->
-        <router-link
+        <router-link v-if="is_admin"
           tag="li"
           to="/admin/instructor"
           class="menu"
@@ -61,7 +61,7 @@
           </a>
         </router-link>
         <!-- Admin Section -->
-        <router-link
+        <router-link v-if="is_admin"
           tag="li"
           to="/admin/section"
           class="menu"
@@ -75,7 +75,7 @@
           </a>
         </router-link>
         <!-- Admin Subject -->
-        <router-link
+        <router-link v-if="is_admin"
           tag="li"
           to="/admin/subject"
           class="menu"
@@ -96,7 +96,10 @@
 <script>
 export default {
   data() {
-    return { menu_collapse: "dashboard" };
+    return {
+      menu_collapse: "dashboard",
+      is_admin: '',
+    };
   },
 
   watch: {
@@ -115,6 +118,19 @@ export default {
   },
 
   mounted() {
+
+    // Force set role after refresh
+    this.$http.get('/api/user/role',{
+       headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    }).then((response) =>{
+        this.is_admin =response.data.role=='admin'?true:false;
+        localStorage.setItem('role',response.data.role);
+    }).catch((errors) =>{
+          console.log(errors);
+    })
+    
     // default menu selection on refresh
     const selector = document.querySelector(
       '#sidebar a[href="' + window.location.pathname + '"]'

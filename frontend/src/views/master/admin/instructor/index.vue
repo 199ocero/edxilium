@@ -196,6 +196,16 @@
             },
         },
         mounted() {
+            // Force set role after refresh
+            this.$http.get('/api/user/role',{
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+            }).then((response) =>{
+                localStorage.setItem('role',response.data.role);
+            }).catch((errors) =>{
+                console.log(errors);
+            })
             this.bind_data();
         },
         methods: {
@@ -213,8 +223,15 @@
                         this.items = res.data.data
                         this.table_option.total_rows = this.items.length;
                         this.get_meta();
-                    }).catch((errors) =>{
-                        console.log(errors.response.data.message)
+                    }).catch(() =>{
+                        if(localStorage.getItem('role')!='admin'){
+                            this.$router.push({ name: 'Home'});
+                            this.$swal.fire(
+                            'Unauthorized',
+                            'You are not allowed to view this page!',
+                            'warning'
+                            )
+                        }
                 })
               };
 
@@ -239,6 +256,7 @@
                     }).catch((errors) =>{
                         this.errors.record(errors.response.data.errors);
                         this.$Progress.fail()
+                        
                 })
                 
             },

@@ -74,6 +74,7 @@ import axios from 'axios'
 Vue.prototype.$http=axios
 axios.defaults.baseURL = 'http://127.0.0.1:8000' //change this base URL when deployed to server
 
+
 // meta field
 function loggedIn(){
     return localStorage.getItem('token')
@@ -88,7 +89,19 @@ router.beforeEach((to, from, next) => {
           query: { redirect: to.fullPath }
         })
       } else {
-        next()
+        
+        let user = localStorage.getItem('role')
+        if (to.matched.some(record => record.meta.is_admin)) {
+          if (user == 'admin') {
+            next()
+          } else {
+            next({
+              name: 'error404'
+            })
+          }
+        } else {
+          next()
+        }
       }
     } else if(to.matched.some(record => record.meta.guest)) {
         if (loggedIn()) {

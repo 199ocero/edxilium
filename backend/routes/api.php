@@ -35,11 +35,13 @@ Route::post('/user/login',[AuthController::class,'login']);
 /* Private Routes*/
 Route::group(['middleware'=>['auth:sanctum','verified']],function(){
 
+    // User Role
+    Route::get('/user/role',[AuthController::class,'role']);
+
     // Admin Logout
     Route::post('/user/logout',[AuthController::class,'logout']);
     
-    
-
+    //Email Resend
     Route::get('email/resend/{id}', [VerificationController::class,'resend'])->name('verification.resend');
 
     // Create instructor

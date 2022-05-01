@@ -109,4 +109,13 @@ class AuthController extends Controller
         ];
         return response($response,200);
     }
+
+    public function role(){
+        $user = auth()->user();
+        $user = $user->role;
+        $response = [
+            'role' => $user 
+        ];
+        return response($response,200);
+    }
 }

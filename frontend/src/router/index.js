@@ -18,7 +18,10 @@ const routes = [
         path: '/',
         name: 'Home',
         component: Home,
-        meta: {requiresAuth: true}
+        meta: {
+            requiresAuth:true,
+            is_admin:false
+        }
     
     },
 
@@ -27,14 +30,20 @@ const routes = [
         path: '/admin/instructor',
         name: 'adminInstructor',
         component: () => import(/* webpackChunkName: "components-tabs" */ '../views/master/admin/instructor/index.vue'),
-        meta: {requiresAuth: true}
+        meta: {
+            requiresAuth:true,
+            is_admin: true
+        }
     },
     // Admin - Section Routes
     {
         path: '/admin/section',
         name: 'adminSection',
         component: () => import(/* webpackChunkName: "components-tabs" */ '../views/master/admin/section/index.vue'),
-        meta: {requiresAuth: true}
+        meta: {
+            requiresAuth:true,
+            is_admin: true
+        }
     },
 
     // Admin - Subject Routes
@@ -42,7 +51,10 @@ const routes = [
         path: '/admin/subject',
         name: 'adminSubject',
         component: () => import(/* webpackChunkName: "components-tabs" */ '../views/master/admin/subject/index.vue'),
-        meta: {requiresAuth: true}
+        meta: {
+            requiresAuth:true,
+            is_admin: true
+        }
     },
 
 
