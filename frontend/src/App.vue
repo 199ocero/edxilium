@@ -13,7 +13,7 @@
     export default {
         metaInfo: {
             title: 'Sales Admin',
-            titleTemplate: '%s | iHelper - A School Management'
+            titleTemplate: '%s | edxilium - A School Management System'
         },
         components: {
             app: appLayout,

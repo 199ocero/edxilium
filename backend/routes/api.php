@@ -4,13 +4,13 @@ use GuzzleHttp\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\SchoolController;
-use App\Http\Controllers\SectionController;
-use App\Http\Controllers\StudentController;
-use App\Http\Controllers\SubjectController;
-use App\Http\Controllers\InstructorController;
-use App\Http\Controllers\SchoolYearController;
 use App\Http\Controllers\VerificationController;
+use App\Http\Controllers\AdminController\SchoolController;
+use App\Http\Controllers\AdminController\SectionController;
+use App\Http\Controllers\AdminController\StudentController;
+use App\Http\Controllers\AdminController\SubjectController;
+use App\Http\Controllers\AdminController\InstructorController;
+use App\Http\Controllers\AdminController\SchoolYearController;
 
 /*
 |--------------------------------------------------------------------------
@@ -54,8 +54,9 @@ Route::group(['middleware'=>['auth:sanctum','verified']],function(){
     Route::put('/instructor/{id}',[InstructorController::class,'update']);
     // Delete specific instructor
     Route::delete('/instructor/{id}',[InstructorController::class,'destroy']);
-    // Disable instructor
-    Route::put('/instructor/disable/{id}',[InstructorController::class,'disable']);
+    // Deactivate Instructor
+    Route::put('/instructor/deactivate/{id}',[InstructorController::class,'deactivate']);
+    // Activate Instructor
     Route::put('/instructor/activate/{id}',[InstructorController::class,'activate']);
 
     // Create student

@@ -6,11 +6,11 @@
                 <ul class="navbar-item theme-brand flex-row text-center">
                     <li class="nav-item theme-logo">
                         <router-link to="/">
-                            <img src="@/assets/images/logo.svg" class="navbar-logo" alt="logo" />
+                            <img src="@/assets/images/edxilium_logo.svg" class="navbar-logo" alt="logo" />
                         </router-link>
                     </li>
                     <li class="nav-item theme-text">
-                        <router-link to="/" class="nav-link"> iHelper </router-link>
+                    <router-link to="/" class="nav-link"> edxilium </router-link>
                     </li>
                 </ul>
                 <div class="d-none horizontal-menu">

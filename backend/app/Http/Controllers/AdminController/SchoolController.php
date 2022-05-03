@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\AdminController;
 
-use App\Models\School;
+use App\Models\SchoolYear;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class SchoolController extends Controller
 {
@@ -14,10 +15,10 @@ class SchoolController extends Controller
      */
     public function index()
     {
-        $school = School::all();
+        $schoolyear = SchoolYear::all();
         $response = [
             'message' => 'Fetch all data successfully!',
-            'data' => $school
+            'data' => $schoolyear
         ];
 
         return response($response,200);
@@ -32,14 +33,16 @@ class SchoolController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'school' => 'required|unique:schools,school|string',
+            'start_year' => 'required|string',
+            'end_year' => 'required|string',
         ]);
-        $school = School::create([
-            'school' => $data['school'],
+        $schoolyear = SchoolYear::create([
+            'start_year' => $data['start_year'],
+            'end_year' => $data['end_year'],
         ]);
         $response = [
-            'message' => 'School created successfully!',
-            'data' => $school,
+            'message' => 'School Year created successfully!',
+            'data' => $schoolyear,
         ];
 
         return response($response,201);
@@ -53,10 +56,10 @@ class SchoolController extends Controller
      */
     public function show($id)
     {
-        $school = School::find($id);
+        $schoolyear = SchoolYear::find($id);
         $response = [
-            'message' => 'Fetch specific school successfully!',
-            'data' => $school,
+            'message' => 'Fetch specific school year successfully!',
+            'data' => $schoolyear,
         ];
 
         return response($response,200);
@@ -71,12 +74,12 @@ class SchoolController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $school = School::find($id);
-        $school->update($request->all());
+        $schoolyear = SchoolYear::find($id);
+        $schoolyear->update($request->all());
 
         $response = [
-            'message' => 'School updated successfully!',
-            'data' => $school,
+            'message' => 'School Year updated successfully!',
+            'data' => $schoolyear,
         ];
 
         return response($response,200);
@@ -90,15 +93,15 @@ class SchoolController extends Controller
      */
     public function destroy($id)
     {
-        $school = School::destroy($id);
+        $schoolyear = SchoolYear::destroy($id);
 
-        if($school==0){
+        if($schoolyear==0){
             $response = [
-                'message' => 'School not found.'
+                'message' => 'School Year not found.'
             ];
         }else{
             $response = [
-                'message' => 'School deleted successfully!'
+                'message' => 'School Year deleted successfully!'
             ];
         }
         

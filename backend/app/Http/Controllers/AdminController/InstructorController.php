@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\AdminController;
 
-use App\Mail\Credentials;
 use App\Models\User;
+use App\Mail\Credentials;
 use App\Models\Instructor;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
 
 class InstructorController extends Controller
@@ -181,7 +182,7 @@ class InstructorController extends Controller
         
 
     }
-    public function disable($id){
+    public function deactivate($id){
         $user = auth()->user();
         $user = $user->role;
         if($user=='admin'){

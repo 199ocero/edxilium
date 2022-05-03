@@ -12,5 +12,6 @@ class Subject extends Model
     
     protected $fillable = [
         'subject',
+        'year_level',
     ];
 }
