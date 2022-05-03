@@ -141,7 +141,7 @@
         </b-form-group>
         <b-form-group label="Year Level">
           <!-- Default Select -->
-          <b-select v-model="form.year_level">
+          <b-select v-model="form.year_level" @change="errors.clear('year_level')">
             <b-select-option disabled value>Select Year Level</b-select-option>
             <b-select-option value="1st Year">1st Year</b-select-option>
             <b-select-option value="2nd Year">2nd Year</b-select-option>
@@ -149,7 +149,7 @@
             <b-select-option value="4th Year">4th Year</b-select-option>
             <b-select-option value="5th Year">5th Year</b-select-option>
           </b-select>
-          <span class="text-danger" v-text="errors.get('gender')"></span>
+          <span class="text-danger" v-text="errors.get('year_level')"></span>
         </b-form-group>
         <hr />
         <div class="d-flex flex-wrap justify-content-center justify-content-sm-end">
@@ -175,7 +175,7 @@
             <b-select-option value="4th Year">4th Year</b-select-option>
             <b-select-option value="5th Year">5th Year</b-select-option>
           </b-select>
-          <span class="text-danger" v-text="errors.get('gender')"></span>
+          <span class="text-danger" v-text="errors.get('year_level')"></span>
         </b-form-group>
         <hr />
         <div class="d-flex flex-wrap justify-content-center justify-content-sm-end">
