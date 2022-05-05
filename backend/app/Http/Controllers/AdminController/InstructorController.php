@@ -55,13 +55,12 @@ class InstructorController extends Controller
         $password = Str::random(30);
 
         $data = $request->validate([
-            'role' => 'required|string',
             'email' => 'required|unique:users,email|string',
         ]);
         if($user=='admin'){
             $instructor = User::create([
                 'status'=> 'activated',
-                'role' => $data['role'],
+                'role' => 'instructor',
                 'email' => $data['email'],
                 'password' => bcrypt($password),
             ]);
@@ -131,8 +130,22 @@ class InstructorController extends Controller
         $user = auth()->user();
         $user = $user->role;
         if($user=='admin'){
+             $data = $request->validate([
+                'first_name' => 'required|string',
+                'middle_name' => 'required|string',
+                'last_name' => 'required|string',
+                'age' => 'required|string',
+                'gender' => 'required|string',
+                'contact_number' => 'required|string',
+            ]);
             $instructor = Instructor::find($id);
-            $instructor->update($request->all());
+            $instructor->first_name = $data['first_name'];
+            $instructor->middle_name = $data['middle_name'];
+            $instructor->last_name = $data['last_name'];
+            $instructor->age = $data['age'];
+            $instructor->gender = $data['gender'];
+            $instructor->contact_number = $data['contact_number'];
+            $instructor->update();
     
             $response = [
                 'message' => 'Instructor updated successfully!',

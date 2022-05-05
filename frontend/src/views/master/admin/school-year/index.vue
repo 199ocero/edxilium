@@ -7,7 +7,7 @@
             <nav class="breadcrumb-one" aria-label="breadcrumb">
               <ol class="breadcrumb">
                 <li class="breadcrumb-item active" aria-current="page">
-                  <span>Admin - Section List</span>
+                  <span>Admin - School Year List</span>
                 </li>
               </ol>
             </nav>
@@ -19,12 +19,12 @@
     <div class="row layout-top-spacing">
       <div class="col-xl-12 col-lg-12 col-sm-12 layout-spacing">
         <div class="seperator-header">
-          <h4>View Section List</h4>
+          <h4>View School Year List</h4>
         </div>
         <div class="panel br-6 p-0">
           <div class="custom-table">
             <div class="d-flex flex-wrap justify-content-center justify-content-sm-start px-3 pt-3 pb-0">
-              <b-button variant="primary" class="m-1" v-b-modal.instructorModal> Add Section </b-button>
+              <b-button variant="primary" class="m-1" v-b-modal.schoolYearModal> Add School Year </b-button>
             </div>
             <div class="table-header">
               <div class="d-flex align-items-center">
@@ -73,26 +73,9 @@
               :show-empty="true"
               @filtered="on_filtered"
             >
-              <template #cell(salary)="row"> ${{ row.item.salary }} </template>
-              <template #cell(action)="row">
-                <a href="javascript:;" class="cancel" @click="delete_row(row.item)">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="feather feather-x-circle table-cancel"
-                  >
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="15" y1="9" x2="9" y2="15"></line>
-                    <line x1="9" y1="9" x2="15" y2="15"></line>
-                  </svg>
-                </a>
+              <template #cell(action)="data">
+                <b-button size="sm mr-3" pill variant="dark" v-b-modal.schoolYearEditModal @click="editSchoolYear(data.item.id)">Edit</b-button>
+                <b-button size="sm" pill variant="danger" @click="deleteSchoolYear(data.item.id)">Delete</b-button>
               </template>
             </b-table>
 
@@ -139,15 +122,60 @@
           </div>
         </div>
       </div>
+      <vue-progress-bar></vue-progress-bar>
     </div>
+    <!--Add Modal for Subject -->
+    <b-modal id="schoolYearModal" title="Add School Year" centered hide-footer @show="addResetModal" @hidden="addResetModal">
+      <b-form action="#" @submit.prevent="addSchoolYear" @keydown="errors.clear($event.target.name)">
+        <b-form-group label="Start Year">
+          <b-input v-model="form.start_year" name="start_year" type="text" placeholder="Start Year"></b-input>
+          <span class="text-danger" v-text="errors.get('start_year')"></span>
+        </b-form-group>
+        <b-form-group label="End Year">
+          <b-input v-model="form.end_year" name="end_year" type="text" placeholder="End Year"></b-input>
+          <span class="text-danger" v-text="errors.get('end_year')"></span>
+        </b-form-group>
+        <hr />
+        <div class="d-flex flex-wrap justify-content-center justify-content-sm-end">
+          <b-button type="submit" variant="primary" class="mt-3 m-1">Create</b-button>
+          <b-button variant="danger" class="mt-3 m-1" @click="$bvModal.hide('schoolYearModal')">Cancel</b-button>
+        </div>
+      </b-form>
+    </b-modal>
+    <!--Edit Modal for Subject -->
+    <b-modal id="schoolYearEditModal" title="Edit School Year" centered hide-footer @hidden="editResetModal">
+      <b-form action="#" @submit.prevent="updateSchoolYear" @keydown="errors.clear($event.target.name)">
+        <b-input hidden v-model="form.id"></b-input>
+        <b-form-group label="Start Year">
+          <b-input v-model="form.start_year" name="start_year" type="text" placeholder="Start Year"></b-input>
+          <span class="text-danger" id="start_year" v-text="errors.get('start_year')"></span>
+        </b-form-group>
+        <b-form-group label="End Year">
+          <b-input v-model="form.end_year" name="end_year" type="text" placeholder="End Year"></b-input>
+          <span class="text-danger" v-text="errors.get('end_year')"></span>
+        </b-form-group>
+        <hr />
+        <div class="d-flex flex-wrap justify-content-center justify-content-sm-end">
+          <b-button type="submit" variant="primary" class="mt-3 m-1">Update</b-button>
+          <b-button variant="danger" class="mt-3 m-1" @click="$bvModal.hide('schoolYearEditModal')">Cancel</b-button>
+        </div>
+      </b-form>
+    </b-modal>
   </div>
 </template>
 
 <script>
+import Errors from '@/main.js';
 export default {
-  metaInfo: { title: 'Bootstrap Basic Table' },
+  metaInfo: { title: 'School Year' },
   data() {
     return {
+      form: {
+        id: '',
+        start_year: '',
+        end_year: '',
+      },
+      errors: new Errors(),
       items: [],
       columns: [],
       table_option: { total_rows: 0, current_page: 1, page_size: 10, search_text: '' },
@@ -168,55 +196,146 @@ export default {
   methods: {
     bind_data() {
       this.columns = [
-        { key: 'name', label: 'Name' },
-        { key: 'position', label: 'Position' },
-        { key: 'office', label: 'Office' },
-        { key: 'age', label: 'Age' },
-        { key: 'start_date', label: 'Start Date' },
-        { key: 'salary', label: 'Salary' },
+        { key: 'start_year', label: 'Start Year' },
+        { key: 'end_year', label: 'End Year' },
         { key: 'action', label: 'Actions', class: 'actions text-center' },
       ];
-      this.items = [
-        { id: 1, name: 'Tiger Nixon', position: 'System Architect', office: 'Edinburgh', age: 61, start_date: '2011/04/25', salary: '320,800' },
-        { id: 2, name: 'Garrett Winters', position: 'Accountant', office: 'Tokyo', age: 63, start_date: '2011/07/25', salary: '170,750' },
-        { id: 3, name: 'Ashton Cox', position: 'Junior Technical Author', office: 'San Francisco', age: 66, start_date: '2009/01/12', salary: '86,000' },
-        { id: 4, name: 'Cedric Kelly', position: 'Senior Javascript Developer', office: 'Edinburgh', age: 22, start_date: '2012/03/29', salary: '433,060' },
-        { id: 5, name: 'Airi Satou', position: 'Accountant', office: 'Tokyo', age: 33, start_date: '2008/11/28', salary: '162,700' },
-        { id: 6, name: 'Brielle Williamson', position: 'Integration Specialist', office: 'New York', age: 61, start_date: '2012/12/02', salary: '372,000' },
-        { id: 7, name: 'Herrod Chandler', position: 'Sales Assistant', office: 'San Francisco', age: 59, start_date: '2012/08/06', salary: '137,500' },
-        { id: 8, name: 'Rhona Davidson', position: 'Integration Specialist', office: 'Tokyo', age: 55, start_date: '2010/10/14', salary: '327,900' },
-        { id: 9, name: 'Colleen Hurst', position: 'Javascript Developer', office: 'San Francisco', age: 39, start_date: '2009/09/15', salary: '205,500' },
-        { id: 10, name: 'Sonya Frost', position: 'Software Engineer', office: 'Edinburgh', age: 23, start_date: '2008/12/13', salary: '103,600' },
-        { id: 11, name: 'Jena Gaines', position: 'Office Manager', office: 'London', age: 30, start_date: '2008/12/19', salary: '90,560' },
-        { id: 12, name: 'Quinn Flynn', position: 'Support Lead', office: 'Edinburgh', age: 22, start_date: '2013/03/03', salary: '342,000' },
-        { id: 13, name: 'Charde Marshall', position: 'Regional Director', office: 'San Francisco', age: 36, start_date: '2008/10/16', salary: '470,600' },
-        { id: 14, name: 'Haley Kennedy', position: 'Senior Marketing Designer', office: 'London', age: 43, start_date: '2012/12/18', salary: '313,500' },
-        { id: 15, name: 'Tatyana Fitzpatrick', position: 'Regional Director', office: 'London', age: 19, start_date: '2010/03/17', salary: '385,750' },
-        { id: 16, name: 'Michael Silva', position: 'Marketing Designer', office: 'London', age: 66, start_date: '2012/11/27', salary: '198,500' },
-        { id: 17, name: 'Paul Byrd', position: 'Chief Financial Officer (CFO)', office: 'New York', age: 64, start_date: '2010/06/09', salary: '725,000' },
-        { id: 18, name: 'Gloria Little', position: 'Systems Administrator', office: 'New York', age: 59, start_date: '2009/04/10', salary: '237,500' },
-        { id: 19, name: 'Bradley Greer', position: 'Software Engineer', office: 'London', age: 41, start_date: '2012/10/13', salary: '132,000' },
-        { id: 20, name: 'Dai Rios', position: 'Personnel Lead', office: 'Edinburgh', age: 35, start_date: '2012/09/26', salary: '217,500' },
-        { id: 21, name: 'Jenette Caldwell', position: 'Development Lead', office: 'New York', age: 61, start_date: '2011/09/03', salary: '345,000' },
-        { id: 22, name: 'Yuri Berry', position: 'Chief Marketing Officer (CMO)', office: 'New York', age: 40, start_date: '2009/06/25', salary: '675,000' },
-        { id: 23, name: 'Caesar Vance', position: 'Pre-Sales Support', office: 'New York', age: 21, start_date: '2011/12/12', salary: '106,450' },
-        { id: 24, name: 'Doris Wilder', position: 'Sales Assistant', office: 'Sidney', age: 23, start_date: '2010/09/20', salary: '85,600' },
-        { id: 25, name: 'Angelica Ramos', position: 'Chief Executive Officer (CEO)', office: 'London', age: 47, start_date: '2009/10/09', salary: '1,200,000' },
-        { id: 26, name: 'Gavin Joyce', position: 'Developer', office: 'Edinburgh', age: 42, start_date: '2010/12/22', salary: '92,575' },
-        { id: 27, name: 'Jennifer Chang', position: 'Regional Director', office: 'Singapore', age: 28, start_date: '2010/11/14', salary: '57,650' },
-      ];
+      let fetchTodo = async () => {
+        this.items = [];
 
-      this.table_option.total_rows = this.items.length;
-      this.get_meta();
+        this.$http
+          .get('/api/school-year', {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+          })
+          .then((res) => {
+            this.items = res.data.data;
+            this.table_option.total_rows = this.items.length;
+            this.get_meta();
+          })
+          .catch((errors) => {
+            console.log(errors);
+          });
+      };
+
+      fetchTodo();
+    },
+    addSchoolYear() {
+      this.$Progress.start();
+      this.$http
+        .post('/api/school-year', this.form, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        })
+        .then(() => {
+          this.$toaster.success('School Year Created Successfuly!');
+          this.$nextTick(() => {
+            this.$bvModal.hide('schoolYearModal');
+          });
+          this.bind_data();
+          this.$Progress.finish();
+        })
+        .catch((errors) => {
+          this.errors.record(errors.response.data.errors);
+          this.$Progress.fail();
+        });
+    },
+    deleteSchoolYear(id) {
+      this.$swal
+        .fire({
+          title: 'Are you sure?',
+          text: "You won't be able to revert this!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, delete it!',
+        })
+        .then((result) => {
+          if (result.isConfirmed) {
+            //Send delete request
+            this.$Progress.start();
+            this.$http
+              .delete('/api/school-year/' + id, {
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+              })
+              .then(() => {
+                this.$swal.fire('Deleted!', 'School Year has been deleted.', 'success');
+                this.bind_data();
+                this.$Progress.finish();
+              })
+              .catch(() => {
+                this.$swal.fire('Failed!', 'There was something wrong.', 'warning');
+                this.$Progress.fail();
+              });
+          }
+        });
+    },
+    editSchoolYear(id) {
+      this.$http
+        .get('/api/school-year/' + id, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        })
+        .then((response) => {
+          this.form.id = response.data.data.id;
+          this.form.start_year = response.data.data.start_year;
+          this.form.end_year = response.data.data.end_year;
+        })
+        .catch((errors) => {
+          this.errors.record(errors.response.data.errors);
+        });
+    },
+    updateSchoolYear() {
+      var id = this.form.id;
+      console.log(id);
+      let self = this;
+      var axios = require('axios');
+      var data = this.form;
+      var config = {
+        method: 'put',
+        url: '/api/school-year/' + id,
+        headers: {
+          Authorization: 'Bearer ' + localStorage.getItem('token'),
+        },
+        data: data,
+      };
+      self.$Progress.start();
+      axios(config)
+        .then(function () {
+          self.$toaster.success('School Year Updated Successfuly!');
+          self.$nextTick(() => {
+            self.$bvModal.hide('schoolYearEditModal');
+          });
+          self.bind_data();
+          self.$Progress.finish();
+        })
+        .catch(function (errors) {
+          self.errors.record(errors.response.data.errors);
+          self.$Progress.fail();
+        });
+    },
+    addResetModal() {
+      this.form.start_year = 'start_year';
+      this.form.end_year = 'end_year';
+      this.form.start_year = '';
+      this.form.end_year = '';
+      this.errors.clear('start_year');
+      this.errors.clear('end_year');
+    },
+    editResetModal() {
+      this.form.start_year = '';
+      this.form.end_year = '';
+      this.errors.clear('start_year');
+      this.errors.clear('end_year');
     },
     on_filtered(filtered_items) {
       this.refresh_table(filtered_items.length);
-    },
-    delete_row(item) {
-      if (confirm('Are you sure want to delete selected row ?')) {
-        this.items = this.items.filter((d) => d.id != item.id);
-        this.refresh_table(this.items.length);
-      }
     },
     refresh_table(total) {
       this.table_option.total_rows = total;

@@ -24,15 +24,7 @@
         <div class="panel br-6 p-0">
           <div class="custom-table">
             <div class="d-flex flex-wrap justify-content-center justify-content-sm-start px-3 pt-3 pb-0">
-              <b-button variant="primary" class="m-1" v-b-modal.instructorModal>
-                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
-                  <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="8.5" cy="7" r="4"></circle>
-                  <line x1="20" y1="8" x2="20" y2="14"></line>
-                  <line x1="23" y1="11" x2="17" y2="11"></line>
-                </svg>
-                Add Instructor
-              </b-button>
+              <b-button variant="primary" class="m-1" v-b-modal.instructorModal> Add Instructor </b-button>
             </div>
             <div class="table-header">
               <div class="d-flex align-items-center">
@@ -244,19 +236,6 @@ export default {
     },
   },
   mounted() {
-    // Force set role after refresh
-    this.$http
-      .get('/api/user/role', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      })
-      .then((response) => {
-        localStorage.setItem('role', response.data.role);
-      })
-      .catch((errors) => {
-        console.log(errors);
-      });
     this.bind_data();
   },
   methods: {
@@ -313,9 +292,14 @@ export default {
         });
     },
     registerResetModal() {
+      // do not remove this (this will fill up the the field)
+      this.form.email = 'email';
+
+      // this will remove text inside the email field
       this.form.email = '';
-      this.form.password = '';
-      this.form.password_confirmation = '';
+
+      // this will remove the error
+      this.errors.clear('email');
     },
     deleteInstructor(id) {
       // console.log(id);
@@ -374,12 +358,26 @@ export default {
         });
     },
     editResetModal() {
+      this.form.first_name = 'first_name';
+      this.form.middle_name = 'middle_name';
+      this.form.last_name = 'last_name';
+      this.form.age = 'age';
+      this.form.gender = 'gender';
+      this.form.contact_number = 'contact_number';
+
       this.form.first_name = '';
       this.form.middle_name = '';
       this.form.last_name = '';
       this.form.age = '';
       this.form.gender = '';
       this.form.contact_number = '';
+
+      this.errors.clear('first_name');
+      this.errors.clear('middle_name');
+      this.errors.clear('last_name');
+      this.errors.clear('age');
+      this.errors.clear('gender');
+      this.errors.clear('contact_number');
     },
     updateInstructor() {
       var id = this.form.id;
@@ -404,8 +402,9 @@ export default {
           self.bind_data();
           self.$Progress.finish();
         })
-        .catch(function (error) {
-          console.log(error);
+        .catch(function (errors) {
+          self.errors.record(errors.response.data.errors);
+          self.$Progress.fail();
         });
     },
     resendEmail(id) {

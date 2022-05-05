@@ -57,6 +57,17 @@ const routes = [
         }
     },
 
+    // Admin - School Year Routes
+    {
+        path: '/admin/school-year',
+        name: 'adminSchoolYear',
+        component: () => import(/* webpackChunkName: "components-tabs" */ '../views/master/admin/school-year/index.vue'),
+        meta: {
+            requiresAuth:true,
+            is_admin: true
+        }
+    },
+
 
      // Public Routes with Authorization
     {

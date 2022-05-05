@@ -107,8 +107,15 @@ class SubjectController extends Controller
         $user = auth()->user();
         $user = $user->role;
         if($user=='admin'){
+            $data = $request->validate([
+                'subject' => 'required|string',
+                'year_level' => 'required|string',
+            ]);
+
             $subject = Subject::find($id);
-            $subject->update($request->all());
+            $subject->subject = $data['subject'];
+            $subject->year_level = $data['year_level'];
+            $subject->update();
 
             $response = [
                 'message' => 'Subject updated successfully!',

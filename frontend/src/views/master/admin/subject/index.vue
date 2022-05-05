@@ -24,15 +24,7 @@
         <div class="panel br-6 p-0">
           <div class="custom-table">
             <div class="d-flex flex-wrap justify-content-center justify-content-sm-start px-3 pt-3 pb-0">
-              <b-button variant="primary" class="m-1" v-b-modal.subjectModal>
-                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                  <polyline points="14 2 14 8 20 8"></polyline>
-                  <line x1="12" y1="18" x2="12" y2="12"></line>
-                  <line x1="9" y1="15" x2="15" y2="15"></line>
-                </svg>
-                Add Subject
-              </b-button>
+              <b-button variant="primary" class="m-1" v-b-modal.subjectModal> Add Subject </b-button>
             </div>
             <div class="table-header">
               <div class="d-flex align-items-center">
@@ -196,7 +188,7 @@ export default {
       form: {
         id: '',
         subject: '',
-        year_level: '1st Year',
+        year_level: '',
       },
       errors: new Errors(),
       items: [],
@@ -336,17 +328,29 @@ export default {
           self.bind_data();
           self.$Progress.finish();
         })
-        .catch(function (error) {
-          console.log(error);
+        .catch(function (errors) {
+          self.errors.record(errors.response.data.errors);
+          self.$Progress.fail();
         });
     },
     addResetModal() {
+      this.form.subject = 'subject';
+      this.form.year_level = 'year_level';
+
       this.form.subject = '';
       this.form.year_level = '';
+
+      this.errors.clear('subject');
+      this.errors.clear('year_level');
     },
     editResetModal() {
+      this.form.subject = 'subject';
+      this.form.year_level = 'year_level';
+
       this.form.subject = '';
       this.form.year_level = '';
+      this.errors.clear('subject');
+      this.errors.clear('year_level');
     },
     on_filtered(filtered_items) {
       this.refresh_table(filtered_items.length);

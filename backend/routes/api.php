@@ -109,9 +109,9 @@ Route::group(['middleware'=>['auth:sanctum','verified']],function(){
     Route::get('/school-year',[SchoolYearController::class,'index']);
     // Get specific school-year
     Route::get('/school-year/{id}',[SchoolYearController::class,'show']);
-    // Update specific section
+    // Update specific school-year
     Route::put('/school-year/{id}',[SchoolYearController::class,'update']);
-    // Delete specific section
+    // Delete specific school-year
     Route::delete('/school-year/{id}',[SchoolYearController::class,'destroy']);
 
    
