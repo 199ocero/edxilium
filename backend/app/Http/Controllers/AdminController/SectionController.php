@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\AdminController;
 
 use App\Models\Section;
+use App\Models\Student;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -91,19 +92,24 @@ class SectionController extends Controller
      */
     public function destroy($id)
     {
-        $section = Section::destroy($id);
+        $user = auth()->user();
+        $user = $user->role;
+        if($user=='admin'){
+            $section = Section::destroy($id);
+            Student::where('section_id',$id)->delete();
+            if($section==0){
+                $response = [
+                    'message' => 'Section not found.'
+                ];
+            }else{
+                $response = [
+                    'message' => 'Section deleted successfully!'
+                ];
+            }
+            
 
-        if($section==0){
-            $response = [
-                'message' => 'Section not found.'
-            ];
-        }else{
-            $response = [
-                'message' => 'Section deleted successfully!'
-            ];
+            return response($response,200);
         }
         
-
-        return response($response,200);
     }
 }

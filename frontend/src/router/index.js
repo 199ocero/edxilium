@@ -45,6 +45,16 @@ const routes = [
             is_admin: true
         }
     },
+    // Admin - Section Student Routes
+    {
+        path: '/admin/section/:id',
+        name: 'adminSectionStudent',
+        component: () => import(/* webpackChunkName: "components-tabs" */ '../views/master/admin/section/student.vue'),
+        meta: {
+            requiresAuth:true,
+            is_admin: true
+        }
+    },
 
     // Admin - Subject Routes
     {

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\AdminController;
 
 use App\Models\Student;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
 
 class StudentController extends Controller
@@ -13,16 +14,16 @@ class StudentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        $student = Student::all();
-        $response = [
-            'message' => 'Fetch all data successfully!',
-            'data' => $student
-        ];
+    // public function index()
+    // {
+    //     $student = Student::all();
+    //     $response = [
+    //         'message' => 'Fetch all data successfully!',
+    //         'data' => $student
+    //     ];
 
-        return response($response,200);
-    }
+    //     return response($response,200);
+    // }
 
     /**
      * Store a newly created resource in storage.
@@ -30,32 +31,40 @@ class StudentController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request,$section_id)
     {
-        $data = $request->validate([
-            'first_name' => 'required|string',
-            'middle_name' => 'required|string',
-            'last_name' => 'required|string',
-            'age' => 'required|string',
-            'gender' => 'required|string',
-            'contact_number' => 'required|string',
-            'email' => 'required|unique:students,email|string',
-        ]);
-        $student = Student::create([
-            'first_name' => $data['first_name'],
-            'middle_name' => $data['middle_name'],
-            'last_name' => $data['last_name'],
-            'age' => $data['age'],
-            'gender' => $data['gender'],
-            'contact_number' => $data['contact_number'],
-            'email' => $data['email'],
-        ]);
-        $response = [
-            'message' => 'Student created successfully!',
-            'data' => $student,
-        ];
+        $user = auth()->user();
+        $user = $user->role;
+        if($user=='admin'){
+            $data = $request->validate([
+                'student_id' => 'required|unique:students,student_id|string',
+                'first_name' => 'required|string',
+                'middle_name' => 'required|string',
+                'last_name' => 'required|string',
+                'age' => 'required|string',
+                'gender' => 'required|string',
+                'contact_number' => 'required|string',
+                'email' => 'required|unique:students,email|string',
+            ]);
+            $student = Student::create([
+                'section_id' => $section_id,
+                'student_id' => $data['student_id'],
+                'first_name' => $data['first_name'],
+                'middle_name' => $data['middle_name'],
+                'last_name' => $data['last_name'],
+                'age' => $data['age'],
+                'gender' => $data['gender'],
+                'contact_number' => $data['contact_number'],
+                'email' => $data['email'],
+            ]);
+            $response = [
+                'message' => 'Student created successfully!',
+                'data' => $student,
+            ];
 
-        return response($response,201);
+            return response($response,201);
+        }
+        
     }
 
     /**
@@ -66,14 +75,43 @@ class StudentController extends Controller
      */
     public function show($id)
     {
-        
-        $student = Student::find($id);
-        $response = [
-            'message' => 'Fetch specific student successfully!',
-            'data' => $student,
-        ];
+        $user = auth()->user();
+        $user = $user->role;
+        if($user=='admin'){
+            $student = Student::where('section_id',$id)->get();
+            $response = [
+                'message' => 'Fetch specific student successfully!',
+                'data' => $student,
+            ];
 
-        return response($response,200);
+            return response($response,200);
+        }else{
+            $response = [
+                'message' => 'User unauthorized.',
+            ];
+            return response($response,401);
+        }
+       
+    }
+    public function showSpecific($id)
+    {
+        $user = auth()->user();
+        $user = $user->role;
+        if($user=='admin'){
+            $student = Student::find($id);
+            $response = [
+                'message' => 'Fetch specific student successfully!',
+                'data' => $student,
+            ];
+
+            return response($response,200);
+        }else{
+            $response = [
+                'message' => 'User unauthorized.',
+            ];
+            return response($response,401);
+        }
+        
     }
 
     /**
@@ -85,15 +123,48 @@ class StudentController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $student = Student::find($id);
-        $student->update($request->all());
-
-        $response = [
-            'message' => 'Student updated successfully!',
-            'data' => $student,
-        ];
-
-        return response($response,200);
+        $user = auth()->user();
+        $user = $user->role;
+        if($user=='admin'){
+             $data = $request->validate([
+                'student_id' => [
+                    'required',
+                    Rule::unique('students')->ignore($id),
+                ],
+                'first_name' => 'required|string',
+                'middle_name' => 'required|string',
+                'last_name' => 'required|string',
+                'age' => 'required|string',
+                'gender' => 'required|string',
+                'contact_number' => 'required|string',
+                'email' => [
+                    'required',
+                    Rule::unique('students')->ignore($id),
+                ],
+            ]);
+            $student = Student::find($id);
+            $student->student_id = $data['student_id'];
+            $student->first_name = $data['first_name'];
+            $student->middle_name = $data['middle_name'];
+            $student->last_name = $data['last_name'];
+            $student->age = $data['age'];
+            $student->gender = $data['gender'];
+            $student->contact_number = $data['contact_number'];
+            $student->email = $data['email'];
+            $student->update();
+    
+            $response = [
+                'message' => 'Student updated successfully!',
+                'data' => $student,
+            ];
+    
+            return response($response,200);
+        }else{
+            $response = [
+                'message' => 'User unauthorized.',
+            ];
+            return response($response,401);
+        }
     }
 
     /**
@@ -104,19 +175,29 @@ class StudentController extends Controller
      */
     public function destroy($id)
     {
-        $student = Student::destroy($id);
+        $user = auth()->user();
+        $user = $user->role;
+        if($user=='admin'){
+            $student = Student::destroy($id);
 
-        if($student==0){
-            $response = [
-                'message' => 'Student not found.'
-            ];
+            if($student==0){
+                $response = [
+                    'message' => 'Student not found.'
+                ];
+            }else{
+                $response = [
+                    'message' => 'Student deleted successfully!'
+                ];
+            }
+            
+
+            return response($response,200);
         }else{
-            $response = [
-                'message' => 'Student deleted successfully!'
+             $response = [
+                'message' => 'User unauthorized.',
             ];
+            return response($response,401);
         }
         
-
-        return response($response,200);
     }
 }

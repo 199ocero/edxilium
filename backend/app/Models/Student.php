@@ -11,8 +11,9 @@ class Student extends Model
     use HasFactory, HasApiTokens;
     
     protected $fillable = [
-        'enroll_id',
+        'section_id',
         'facebook_id',
+        'student_id',
         'first_name',
         'middle_name',
         'last_name',

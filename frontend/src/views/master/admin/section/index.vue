@@ -24,7 +24,7 @@
         <div class="panel br-6 p-0">
           <div class="custom-table">
             <div class="d-flex flex-wrap justify-content-center justify-content-sm-start px-3 pt-3 pb-0">
-              <b-button variant="primary" class="m-1" v-b-modal.instructorModal> Add Section </b-button>
+              <b-button variant="primary" class="m-1" v-b-modal.sectionModal> Add Section </b-button>
             </div>
             <div class="table-header">
               <div class="d-flex align-items-center">
@@ -73,26 +73,12 @@
               :show-empty="true"
               @filtered="on_filtered"
             >
-              <template #cell(salary)="row"> ${{ row.item.salary }} </template>
-              <template #cell(action)="row">
-                <a href="javascript:;" class="cancel" @click="delete_row(row.item)">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="feather feather-x-circle table-cancel"
-                  >
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="15" y1="9" x2="9" y2="15"></line>
-                    <line x1="9" y1="9" x2="15" y2="15"></line>
-                  </svg>
-                </a>
+              <template #cell(section)="data">
+                <b-button size="sm mr-3" pill variant="primary" :to="{ name: 'adminSectionStudent', params: { id: data.item.id } }">{{ data.item.section }}</b-button>
+              </template>
+              <template #cell(action)="data">
+                <b-button size="sm mr-3" pill variant="dark" v-b-modal.sectionEditModal @click="editSection(data.item.id)">Edit</b-button>
+                <b-button size="sm" pill variant="danger" @click="deleteSection(data.item.id)">Delete</b-button>
               </template>
             </b-table>
 
@@ -139,15 +125,55 @@
           </div>
         </div>
       </div>
+      <vue-progress-bar></vue-progress-bar>
     </div>
+    <!--Add Modal for Section -->
+    <b-modal id="sectionModal" title="Add Section" centered hide-footer @hidden="sectionResetModal">
+      <b-form action="#" @submit.prevent="addSection" @keydown="errors.clear($event.target.name)">
+        <b-form-group label="Section Name">
+          <b-input v-model="form.section" name="section" type="text" placeholder="Section Name"></b-input>
+          <span class="text-danger" v-text="errors.get('section')"></span>
+        </b-form-group>
+        <b-form-group label="CSV File">
+          <b-form-file v-model="form.file" plain></b-form-file>
+          <span class="text-danger" v-text="errors.get('file')"></span>
+        </b-form-group>
+        <div class="d-flex flex-wrap justify-content-center justify-content-sm-end">
+          <b-button type="submit" variant="primary" class="mt-3 m-1">Create</b-button>
+          <b-button variant="danger" class="mt-3 m-1" @click="$bvModal.hide('sectionModal')">Cancel</b-button>
+        </div>
+      </b-form>
+    </b-modal>
+    <!--Add Modal for Section -->
+    <b-modal id="sectionEditModal" title="Add Section" centered hide-footer @hidden="sectionEditResetModal">
+      <b-form action="#" @submit.prevent="updateSection" @keydown="errors.clear($event.target.name)">
+        <b-input hidden v-model="form.id"></b-input>
+        <b-form-group label="Section Name">
+          <b-input v-model="form.section" name="section" type="text" placeholder="Section Name"></b-input>
+          <span class="text-danger" v-text="errors.get('section')"></span>
+        </b-form-group>
+        <hr />
+        <div class="d-flex flex-wrap justify-content-center justify-content-sm-end">
+          <b-button type="submit" variant="primary" class="mt-3 m-1">Update</b-button>
+          <b-button variant="danger" class="mt-3 m-1" @click="$bvModal.hide('sectionEditModal')">Cancel</b-button>
+        </div>
+      </b-form>
+    </b-modal>
   </div>
 </template>
 
 <script>
+import Errors from '@/main.js';
 export default {
-  metaInfo: { title: 'Bootstrap Basic Table' },
+  metaInfo: { title: 'Section' },
   data() {
     return {
+      form: {
+        id: '',
+        section: '',
+        file: null,
+      },
+      errors: new Errors(),
       items: [],
       columns: [],
       table_option: { total_rows: 0, current_page: 1, page_size: 10, search_text: '' },
@@ -168,55 +194,151 @@ export default {
   methods: {
     bind_data() {
       this.columns = [
-        { key: 'name', label: 'Name' },
-        { key: 'position', label: 'Position' },
-        { key: 'office', label: 'Office' },
-        { key: 'age', label: 'Age' },
-        { key: 'start_date', label: 'Start Date' },
-        { key: 'salary', label: 'Salary' },
+        { key: 'section', label: 'Section Name' },
         { key: 'action', label: 'Actions', class: 'actions text-center' },
       ];
-      this.items = [
-        { id: 1, name: 'Tiger Nixon', position: 'System Architect', office: 'Edinburgh', age: 61, start_date: '2011/04/25', salary: '320,800' },
-        { id: 2, name: 'Garrett Winters', position: 'Accountant', office: 'Tokyo', age: 63, start_date: '2011/07/25', salary: '170,750' },
-        { id: 3, name: 'Ashton Cox', position: 'Junior Technical Author', office: 'San Francisco', age: 66, start_date: '2009/01/12', salary: '86,000' },
-        { id: 4, name: 'Cedric Kelly', position: 'Senior Javascript Developer', office: 'Edinburgh', age: 22, start_date: '2012/03/29', salary: '433,060' },
-        { id: 5, name: 'Airi Satou', position: 'Accountant', office: 'Tokyo', age: 33, start_date: '2008/11/28', salary: '162,700' },
-        { id: 6, name: 'Brielle Williamson', position: 'Integration Specialist', office: 'New York', age: 61, start_date: '2012/12/02', salary: '372,000' },
-        { id: 7, name: 'Herrod Chandler', position: 'Sales Assistant', office: 'San Francisco', age: 59, start_date: '2012/08/06', salary: '137,500' },
-        { id: 8, name: 'Rhona Davidson', position: 'Integration Specialist', office: 'Tokyo', age: 55, start_date: '2010/10/14', salary: '327,900' },
-        { id: 9, name: 'Colleen Hurst', position: 'Javascript Developer', office: 'San Francisco', age: 39, start_date: '2009/09/15', salary: '205,500' },
-        { id: 10, name: 'Sonya Frost', position: 'Software Engineer', office: 'Edinburgh', age: 23, start_date: '2008/12/13', salary: '103,600' },
-        { id: 11, name: 'Jena Gaines', position: 'Office Manager', office: 'London', age: 30, start_date: '2008/12/19', salary: '90,560' },
-        { id: 12, name: 'Quinn Flynn', position: 'Support Lead', office: 'Edinburgh', age: 22, start_date: '2013/03/03', salary: '342,000' },
-        { id: 13, name: 'Charde Marshall', position: 'Regional Director', office: 'San Francisco', age: 36, start_date: '2008/10/16', salary: '470,600' },
-        { id: 14, name: 'Haley Kennedy', position: 'Senior Marketing Designer', office: 'London', age: 43, start_date: '2012/12/18', salary: '313,500' },
-        { id: 15, name: 'Tatyana Fitzpatrick', position: 'Regional Director', office: 'London', age: 19, start_date: '2010/03/17', salary: '385,750' },
-        { id: 16, name: 'Michael Silva', position: 'Marketing Designer', office: 'London', age: 66, start_date: '2012/11/27', salary: '198,500' },
-        { id: 17, name: 'Paul Byrd', position: 'Chief Financial Officer (CFO)', office: 'New York', age: 64, start_date: '2010/06/09', salary: '725,000' },
-        { id: 18, name: 'Gloria Little', position: 'Systems Administrator', office: 'New York', age: 59, start_date: '2009/04/10', salary: '237,500' },
-        { id: 19, name: 'Bradley Greer', position: 'Software Engineer', office: 'London', age: 41, start_date: '2012/10/13', salary: '132,000' },
-        { id: 20, name: 'Dai Rios', position: 'Personnel Lead', office: 'Edinburgh', age: 35, start_date: '2012/09/26', salary: '217,500' },
-        { id: 21, name: 'Jenette Caldwell', position: 'Development Lead', office: 'New York', age: 61, start_date: '2011/09/03', salary: '345,000' },
-        { id: 22, name: 'Yuri Berry', position: 'Chief Marketing Officer (CMO)', office: 'New York', age: 40, start_date: '2009/06/25', salary: '675,000' },
-        { id: 23, name: 'Caesar Vance', position: 'Pre-Sales Support', office: 'New York', age: 21, start_date: '2011/12/12', salary: '106,450' },
-        { id: 24, name: 'Doris Wilder', position: 'Sales Assistant', office: 'Sidney', age: 23, start_date: '2010/09/20', salary: '85,600' },
-        { id: 25, name: 'Angelica Ramos', position: 'Chief Executive Officer (CEO)', office: 'London', age: 47, start_date: '2009/10/09', salary: '1,200,000' },
-        { id: 26, name: 'Gavin Joyce', position: 'Developer', office: 'Edinburgh', age: 42, start_date: '2010/12/22', salary: '92,575' },
-        { id: 27, name: 'Jennifer Chang', position: 'Regional Director', office: 'Singapore', age: 28, start_date: '2010/11/14', salary: '57,650' },
-      ];
+      let fetchTodo = async () => {
+        this.items = [];
 
-      this.table_option.total_rows = this.items.length;
-      this.get_meta();
+        this.$http
+          .get('/api/section', {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+          })
+          .then((res) => {
+            this.items = res.data.data;
+            this.table_option.total_rows = this.items.length;
+            this.get_meta();
+          })
+          .catch((errors) => {
+            console.log(errors);
+          });
+      };
+
+      fetchTodo();
+    },
+    addSection() {
+      let self = this;
+      self.$Progress.start();
+      const config = {
+        headers: {
+          'content-type': 'multipart/form-data',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      };
+      let data = new FormData();
+      data.append('file', self.form.file);
+      data.append('section', self.form.section);
+      self.$http
+        .post('/api/import/student-section', data, config)
+        .then(function () {
+          self.$toaster.success('Section Created Successfuly!');
+          self.$nextTick(() => {
+            self.$bvModal.hide('sectionModal');
+          });
+          self.bind_data();
+          self.$Progress.finish();
+        })
+        .catch((errors) => {
+          self.errors.record(errors.response.data.errors);
+          self.$Progress.fail();
+        });
+    },
+    deleteSection(id) {
+      this.$swal
+        .fire({
+          title: 'Are you sure?',
+          text: "You won't be able to revert this!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, delete it!',
+        })
+        .then((result) => {
+          if (result.isConfirmed) {
+            //Send delete request
+            this.$Progress.start();
+            this.$http
+              .delete('/api/section/' + id, {
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+              })
+              .then(() => {
+                this.$swal.fire('Deleted!', 'Section has been deleted.', 'success');
+                this.bind_data();
+                this.$Progress.finish();
+              })
+              .catch(() => {
+                this.$swal.fire('Failed!', 'There was something wrong.', 'warning');
+                this.$Progress.fail();
+              });
+          }
+        });
+    },
+    editSection(id) {
+      // console.log(id);
+      this.$http
+        .get('/api/section/' + id, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        })
+        .then((response) => {
+          this.form.id = response.data.data.id;
+          this.form.section = response.data.data.section;
+        })
+        .catch((errors) => {
+          this.errors.record(errors.response.data.errors);
+        });
+    },
+    updateSection() {
+      var id = this.form.id;
+      let self = this;
+      var axios = require('axios');
+      var data = this.form;
+      var config = {
+        method: 'put',
+        url: '/api/section/' + id,
+        headers: {
+          Authorization: 'Bearer ' + localStorage.getItem('token'),
+        },
+        data: data,
+      };
+      self.$Progress.start();
+      axios(config)
+        .then(function () {
+          self.$toaster.success('Section Update Successfuly!');
+          self.$nextTick(() => {
+            self.$bvModal.hide('sectionEditModal');
+          });
+          self.bind_data();
+          self.$Progress.finish();
+        })
+        .catch(function (errors) {
+          self.errors.record(errors.response.data.errors);
+          self.$Progress.fail();
+        });
+    },
+    sectionResetModal() {
+      this.form.section = 'section';
+
+      this.form.section = '';
+
+      this.errors.clear('section');
+      this.errors.clear('file');
+    },
+    sectionEditResetModal() {
+      this.form.section = 'section';
+
+      this.form.section = '';
+
+      this.errors.clear('section');
     },
     on_filtered(filtered_items) {
       this.refresh_table(filtered_items.length);
-    },
-    delete_row(item) {
-      if (confirm('Are you sure want to delete selected row ?')) {
-        this.items = this.items.filter((d) => d.id != item.id);
-        this.refresh_table(this.items.length);
-      }
     },
     refresh_table(total) {
       this.table_option.total_rows = total;

@@ -50,16 +50,23 @@ class SchoolYearController extends Controller
                 'start_year' => 'required|string',
                 'end_year' => 'required|string',
             ]);
-            $schoolyear = SchoolYear::create([
-                'start_year' => $data['start_year'],
-                'end_year' => $data['end_year'],
-            ]);
-            $response = [
-                'message' => 'School Year created successfully!',
-                'data' => $schoolyear,
-            ];
+            if($request->start_year>=$request->end_year){
+                 throw ValidationException::withMessages([
+                    'start_year' => 'The starting year should be lesser than the end year.'
+                ]);
+            }else{
+                $schoolyear = SchoolYear::create([
+                    'start_year' => $data['start_year'],
+                    'end_year' => $data['end_year'],
+                ]);
+                $response = [
+                    'message' => 'School Year created successfully!',
+                    'data' => $schoolyear,
+                ];
 
-            return response($response,201);
+                return response($response,201);
+            }
+            
         }else{
             $response = [
                 'message' => 'User unauthorized.',

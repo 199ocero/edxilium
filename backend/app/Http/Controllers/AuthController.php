@@ -66,9 +66,6 @@ class AuthController extends Controller
             throw ValidationException::withMessages([
                 'email' => 'The provided credentials are incorrect.'
             ]);
-            return response([
-                'message' => 'The provided credentials are incorrect.'
-            ],401);
         }else{
             if($user->hasVerifiedEmail()){
                 if($user->status == 'activated'){

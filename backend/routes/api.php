@@ -11,6 +11,7 @@ use App\Http\Controllers\AdminController\StudentController;
 use App\Http\Controllers\AdminController\SubjectController;
 use App\Http\Controllers\AdminController\InstructorController;
 use App\Http\Controllers\AdminController\SchoolYearController;
+use App\Http\Controllers\AdminController\StudentSectionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -60,11 +61,13 @@ Route::group(['middleware'=>['auth:sanctum','verified']],function(){
     Route::put('/instructor/activate/{id}',[InstructorController::class,'activate']);
 
     // Create student
-    Route::post('/student',[StudentController::class,'store']);
+    Route::post('/student/{id}',[StudentController::class,'store']);
     // Get all student
-    Route::get('/student',[StudentController::class,'index']);
+    // Route::get('/student',[StudentController::class,'index']);
+    // Get specific student by section
+    Route::get('/student-section/{id}',[StudentController::class,'show']);
     // Get specific student
-    Route::get('/student/{id}',[StudentController::class,'show']);
+    Route::get('/student/{id}',[StudentController::class,'showSpecific']);
     // Update specific student
     Route::put('/student/{id}',[StudentController::class,'update']);
     // Delete specific student
@@ -80,6 +83,9 @@ Route::group(['middleware'=>['auth:sanctum','verified']],function(){
     Route::put('/section/{id}',[SectionController::class,'update']);
     // Delete specific section
     Route::delete('/section/{id}',[SectionController::class,'destroy']);
+
+    // Import Student Section
+    Route::post('/import/student-section',[StudentSectionController::class,'import']);
 
     // Create subject
     Route::post('/subject',[SubjectController::class,'store']);
