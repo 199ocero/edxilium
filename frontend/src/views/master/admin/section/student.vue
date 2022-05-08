@@ -24,7 +24,8 @@
         <div class="panel br-6 p-0">
           <div class="custom-table">
             <div class="d-flex flex-wrap justify-content-center justify-content-sm-start px-3 pt-3 pb-0">
-              <b-button variant="primary" class="m-1" v-b-modal.studentAddModal> Add Student </b-button>
+              <b-button variant="primary" class="m-1" v-b-modal.studentAddModal v-if="form.sectionName != ''"> Add Student </b-button>
+              <b-button variant="primary" class="m-1" v-else disabled> Add Student </b-button>
             </div>
             <div class="table-header">
               <div class="d-flex align-items-center">
@@ -224,7 +225,7 @@
 <script>
 import Errors from '@/main.js';
 export default {
-  metaInfo: { title: 'Section' },
+  metaInfo: { title: 'Student' },
   data() {
     return {
       form: {

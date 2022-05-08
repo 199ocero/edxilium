@@ -78,6 +78,27 @@ const routes = [
         }
     },
 
+    // Instructor - Assign Routes
+    {
+        path: '/instructor/assign',
+        name: 'instructorAssign',
+        component: () => import(/* webpackChunkName: "components-tabs" */ '../views/master/instructor/assign/index.vue'),
+        meta: {
+            requiresAuth: true,
+            is_instructor: true
+        }
+    },
+    // Instructor - Profile Routes
+    {
+        path: '/instructor/profile',
+        name: 'instructorProfile',
+        component: () => import(/* webpackChunkName: "components-tabs" */ '../views/master/instructor/profile/profile.vue'),
+        meta: {
+            requiresAuth: true,
+            is_instructor: true
+        }
+    },
+
 
      // Public Routes with Authorization
     {

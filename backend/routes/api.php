@@ -12,6 +12,7 @@ use App\Http\Controllers\AdminController\SubjectController;
 use App\Http\Controllers\AdminController\InstructorController;
 use App\Http\Controllers\AdminController\SchoolYearController;
 use App\Http\Controllers\AdminController\StudentSectionController;
+use App\Http\Controllers\InstructorController\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -120,7 +121,11 @@ Route::group(['middleware'=>['auth:sanctum','verified']],function(){
     // Delete specific school-year
     Route::delete('/school-year/{id}',[SchoolYearController::class,'destroy']);
 
-   
+    // Instructor
+    // Get instructor current login
+    Route::get('/instructor/profile/{id}',[ProfileController::class,'show']);
+    // Update instructor current login
+    Route::put('/instructor/profile/{id}',[ProfileController::class,'update']);
 });
 
  // Email Verification

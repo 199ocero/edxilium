@@ -75,6 +75,9 @@ Vue.prototype.$http=axios
 axios.defaults.baseURL = 'http://127.0.0.1:8000' //change this base URL when deployed to server
 
 
+import VueMask from 'v-mask';
+Vue.use(VueMask);
+
 // meta field
 function loggedIn(){
     return localStorage.getItem('token')
@@ -99,7 +102,17 @@ router.beforeEach((to, from, next) => {
               name: 'error404'
             })
           }
-        } else {
+        } else if (to.matched.some(record => record.meta.is_instructor)) {
+          if (user == 'instructor') {
+            next()
+          } else {
+            next({
+              name: 'error404'
+            })
+          }
+        }
+        
+        else {
           next()
         }
       }

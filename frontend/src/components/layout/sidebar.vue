@@ -79,7 +79,7 @@
             </div>
           </a>
         </router-link> -->
-        <li class="menu">
+        <li class="menu" v-if="is_admin">
           <a href="#elements" v-b-toggle class="dropdown-toggle" @click.prevent>
             <div class="">
               <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
@@ -152,6 +152,32 @@
             </div>
           </a>
         </router-link>
+        <!-- Instructor Assign Subject and Section -->
+        <router-link v-if="is_instructor" tag="li" to="/instructor/assign" class="menu" @click.native="toggleMobileMenu">
+          <a class="dropdown-toggle">
+            <div class="">
+              <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="12" y1="18" x2="12" y2="12"></line>
+                <line x1="9" y1="15" x2="15" y2="15"></line>
+              </svg>
+              <span>{{ $t('Assign') }}</span>
+            </div>
+          </a>
+        </router-link>
+        <!-- Instructor Profile -->
+        <router-link v-if="is_instructor" tag="li" to="/instructor/profile" class="menu" @click.native="toggleMobileMenu">
+          <a class="dropdown-toggle">
+            <div class="">
+              <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              <span>{{ $t('Profile') }}</span>
+            </div>
+          </a>
+        </router-link>
       </perfect-scrollbar>
     </nav>
   </div>
@@ -163,6 +189,7 @@ export default {
     return {
       menu_collapse: 'dashboard',
       is_admin: '',
+      is_instructor: '',
     };
   },
   computed: {
@@ -198,6 +225,7 @@ export default {
       })
       .then((response) => {
         this.is_admin = response.data.role == 'admin' ? true : false;
+        this.is_instructor = response.data.role == 'instructor' ? true : false;
         localStorage.setItem('role', response.data.role);
       })
       .catch((errors) => {
