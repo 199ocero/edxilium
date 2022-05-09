@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Link Expired</title>
+    <title>Token Invalid</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -544,10 +544,10 @@
         <div class="max-w-xl mx-auto sm:px-6 lg:px-8">
             <div class="flex items-center pt-8 sm:justify-start sm:pt-0">
                 <div class="px-4 text-lg text-gray-500 border-r border-gray-400 tracking-wider">
-                    410 </div>
+                    400 </div>
 
                 <div class="ml-4 text-lg text-gray-500 uppercase tracking-wider">
-                    Email Verification Link Expired. </div>
+                    Forgot Password Token Invalid. </div>
             </div>
         </div>
     </div>

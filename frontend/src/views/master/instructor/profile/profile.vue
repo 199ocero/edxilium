@@ -111,7 +111,7 @@ import Errors from '@/main.js';
 import '@/assets/sass/scrollspyNav.scss';
 import '@/assets/sass/users/user-profile.scss';
 export default {
-  metaInfo: { title: 'User Profile' },
+  metaInfo: { title: 'Instructor Profile' },
   data() {
     return {
       form: {

@@ -11,16 +11,15 @@ class Credentials extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $email, $password;
+    public $email;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($email,$password)
+    public function __construct($email)
     {
         $this->email = $email;
-        $this->password = $password;
     }
 
     /**

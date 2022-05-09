@@ -184,6 +184,8 @@
           </b-form-group>
           <b-form-group label="Contact Number" class="col-md-4">
             <b-input v-model="form.contact_number" name="contact_number" v-mask="'(###) ###-####'" placeholder="(___) ___-____"></b-input>
+            <small class="form-text text-muted"><span style="color: #009688">Note:</span> Contact number should start with number 9.</small>
+
             <span class="text-danger" v-text="errors.get('contact_number')"></span>
           </b-form-group>
         </b-form-row>

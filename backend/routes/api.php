@@ -12,6 +12,7 @@ use App\Http\Controllers\AdminController\SubjectController;
 use App\Http\Controllers\AdminController\InstructorController;
 use App\Http\Controllers\AdminController\SchoolYearController;
 use App\Http\Controllers\AdminController\StudentSectionController;
+use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\InstructorController\ProfileController;
 
 /*
@@ -45,6 +46,8 @@ Route::group(['middleware'=>['auth:sanctum','verified']],function(){
     
     //Email Resend
     Route::get('email/resend/{id}', [VerificationController::class,'resend'])->name('verification.resend');
+
+    
 
     // Create instructor
     Route::post('/instructor',[InstructorController::class,'store']);
@@ -128,5 +131,11 @@ Route::group(['middleware'=>['auth:sanctum','verified']],function(){
     Route::put('/instructor/profile/{id}',[ProfileController::class,'update']);
 });
 
+
+// Forgot Password
+Route::post('password/email', [ForgotPasswordController::class,'forgot']);
+// Reset Password
+Route::post('password/reset', [ForgotPasswordController::class,'reset']);
+
  // Email Verification
- Route::get('email/verify/{id}', [VerificationController::class,'verify'])->name('verification.verify'); // Make sure to keep this as your route name
+Route::get('email/verify/{id}', [VerificationController::class,'verify'])->name('verification.verify'); // Make sure to keep this as your route name

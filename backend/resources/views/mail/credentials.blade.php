@@ -1,17 +1,13 @@
 @component('mail::message')
-# User Credentials
+# Instructor Credentials
 
-After you verified your email address, please use this credentials to login:
+After you verified your email address, please use this email to reset your password:
 
-Email: {{$email}}
-<br>
-Password: {{$password}}
+Email: {{ $email }}
 <br>
 <br>
-<strong>Note: </strong>It is advisable to change your password after login.
-{{-- Please change the link when deployed to server --}}
-@component('mail::button', ['url' => 'http://localhost:8080/login'])
-Login
+@component('mail::button', ['url' => env('FRONTEND_URL') . '/password/reset'])
+    Reset Password
 @endcomponent
 
 

@@ -13,6 +13,13 @@ const routes = [
         component: () => import(/* webpackChunkName: "pages-error404" */ '../views/master/error/404.vue'),
         meta: { layout: 'auth' }
     },
+    // Reset Password
+    {
+        path: '/password/reset',
+        name: 'passwordReset',
+        component: () => import(/* webpackChunkName: "components-tabs" */ '../views/master/auth/reset-password.vue'),
+        meta: { layout: 'auth' }
+    },
     //Dashboard
     { 
         path: '/',
