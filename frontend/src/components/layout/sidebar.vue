@@ -80,7 +80,7 @@
           </a>
         </router-link> -->
         <li class="menu" v-if="is_admin">
-          <a href="#elements" v-b-toggle class="dropdown-toggle" @click.prevent>
+          <a href="#section" v-b-toggle class="dropdown-toggle" @click.prevent>
             <div class="">
               <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
                 <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
@@ -105,15 +105,14 @@
               </svg>
             </div>
           </a>
-          <b-collapse id="elements" accordion="menu">
+          <b-collapse id="section" accordion="menu">
             <ul class="collapse submenu list-unstyled show">
               <router-link tag="li" to="/admin/section" @click.native="toggleMobileMenu"><a>Section</a></router-link>
-            </ul>
-            <ul class="collapse submenu list-unstyled show">
               <router-link tag="li" :to="`/admin/section/${this.sectionID}`" @click.native="toggleMobileMenu"><a>Student</a></router-link>
             </ul>
           </b-collapse>
         </li>
+
         <!-- Admin Subject -->
         <router-link v-if="is_admin" tag="li" to="/admin/subject" class="menu" @click.native="toggleMobileMenu">
           <a class="dropdown-toggle">
@@ -202,18 +201,20 @@ export default {
       }
     },
   },
-  // watch: {
-  //   $route(to) {
-  //     const selector = document.querySelector('#sidebar a[href="' + to.path + '"]');
-  //     const ul = selector.closest('ul.collapse');
-  //     if (!ul) {
-  //       const ele = document.querySelector('.dropdown-toggle.not-collapsed');
-  //       if (ele) {
-  //         ele.click();
-  //       }
-  //     }
-  //   },
-  // },
+  watch: {
+    $route(to) {
+      const selector = document.querySelector('#sidebar a[href="' + to.path + '"]');
+      if (selector != null) {
+        const ul = selector.closest('ul.collapse');
+        if (!ul) {
+          const ele = document.querySelector('.dropdown-toggle.not-collapsed');
+          if (ele) {
+            ele.click();
+          }
+        }
+      }
+    },
+  },
 
   mounted() {
     // Force set role after refresh

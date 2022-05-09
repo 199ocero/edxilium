@@ -170,20 +170,20 @@
         </b-form-row>
         <b-form-row class="mb-4">
           <b-form-group label="Age" class="col-md-4">
-            <b-input v-model="form.age" name="age" type="number" placeholder="Age"></b-input>
+            <b-input v-model="form.age" name="age" v-mask="'##'" placeholder="__"></b-input>
             <span class="text-danger" v-text="errors.get('age')"></span>
           </b-form-group>
           <b-form-group label="Gender" class="col-md-4">
             <!-- Default Select -->
             <b-select v-model="form.gender">
-              <b-select-option :value="null" disabled>-- Please select an option --</b-select-option>
+              <b-select-option :value="null" disabled>Select Gender</b-select-option>
               <b-select-option value="Male">Male</b-select-option>
               <b-select-option value="Female">Female</b-select-option>
             </b-select>
             <span class="text-danger" v-text="errors.get('gender')"></span>
           </b-form-group>
           <b-form-group label="Contact Number" class="col-md-4">
-            <b-input v-model="form.contact_number" name="contact_number" type="text" placeholder="Contact Number"></b-input>
+            <b-input v-model="form.contact_number" name="contact_number" v-mask="'(###) ###-####'" placeholder="(___) ___-____"></b-input>
             <span class="text-danger" v-text="errors.get('contact_number')"></span>
           </b-form-group>
         </b-form-row>

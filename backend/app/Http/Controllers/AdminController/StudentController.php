@@ -43,7 +43,7 @@ class StudentController extends Controller
                 'last_name' => 'required|string',
                 'age' => 'required|string',
                 'gender' => 'required|string',
-                'contact_number' => 'required|string',
+                'contact_number' => 'required|digits:10',
                 'email' => 'required|unique:students,email|string',
             ]);
             $student = Student::create([
@@ -136,7 +136,7 @@ class StudentController extends Controller
                 'last_name' => 'required|string',
                 'age' => 'required|string',
                 'gender' => 'required|string',
-                'contact_number' => 'required|string',
+                'contact_number' => 'required|digits:10',
                 'email' => [
                     'required',
                     Rule::unique('students')->ignore($id),

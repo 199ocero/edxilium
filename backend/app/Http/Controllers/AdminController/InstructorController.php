@@ -136,7 +136,7 @@ class InstructorController extends Controller
                 'last_name' => 'required|string',
                 'age' => 'required|string',
                 'gender' => 'required|string',
-                'contact_number' => 'required|string',
+                'contact_number' => 'required|digits:10',
             ]);
             $instructor = Instructor::find($id);
             $instructor->first_name = $data['first_name'];

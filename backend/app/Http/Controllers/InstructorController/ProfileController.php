@@ -73,7 +73,7 @@ class ProfileController extends Controller
                 'last_name' => 'required|string',
                 'age' => 'required|string',
                 'gender' => 'required|string',
-                'contact_number' => 'required|string',
+                'contact_number' => 'required|digits:10',
             ]);
             $instructor = Instructor::where('instructor_id',auth()->id())->first();
             $instructor->first_name = $data['first_name'];

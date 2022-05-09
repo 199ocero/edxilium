@@ -20,6 +20,11 @@ class StudentImport implements ToModel, WithHeadingRow, WithValidation
     */
     public function model(array $row)
     {
+        $number =$row['contact_number'];
+        $result = sprintf("(%s) %s-%s",
+              substr($number, 0, 3),
+              substr($number, 3, 3),
+              substr($number, 6));
         $student= Student::create([
             'section_id'=>$this->section_id,
             'student_id'=>$row['student_id'],
@@ -28,7 +33,7 @@ class StudentImport implements ToModel, WithHeadingRow, WithValidation
             'last_name'=>$row['last_name'],
             'age'=>$row['age'],
             'gender'=>$row['gender'],
-            'contact_number'=>$row['contact_number'],
+            'contact_number'=>$result,
             'email'=>$row['email'],
         ]);
         return $student;
