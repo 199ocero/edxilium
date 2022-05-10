@@ -36,6 +36,9 @@ class StudentController extends Controller
         $user = auth()->user();
         $user = $user->role;
         if($user=='admin'){
+             $requestData = $request->all();
+            $requestData['contact_number'] = preg_replace('/\D/', '', $request->contact_number);
+            $request->replace($requestData);
             $data = $request->validate([
                 'student_id' => 'required|unique:students,student_id|string',
                 'first_name' => 'required|string',
@@ -46,6 +49,11 @@ class StudentController extends Controller
                 'contact_number' => 'required|digits:10',
                 'email' => 'required|unique:students,email|string',
             ]);
+            $number =$data['contact_number'];
+            $result = sprintf("(%s) %s-%s",
+                substr($number, 0, 3),
+                substr($number, 3, 3),
+                substr($number, 6));
             $student = Student::create([
                 'section_id' => $section_id,
                 'student_id' => $data['student_id'],
@@ -54,7 +62,7 @@ class StudentController extends Controller
                 'last_name' => $data['last_name'],
                 'age' => $data['age'],
                 'gender' => $data['gender'],
-                'contact_number' => $data['contact_number'],
+                'contact_number' => $result,
                 'email' => $data['email'],
             ]);
             $response = [
@@ -78,7 +86,7 @@ class StudentController extends Controller
         $user = auth()->user();
         $user = $user->role;
         if($user=='admin'){
-            $student = Student::where('section_id',$id)->get();
+            $student = Student::where('section_id',$id)->latest()->get();
             $response = [
                 'message' => 'Fetch specific student successfully!',
                 'data' => $student,
@@ -126,6 +134,9 @@ class StudentController extends Controller
         $user = auth()->user();
         $user = $user->role;
         if($user=='admin'){
+            $requestData = $request->all();
+            $requestData['contact_number'] = preg_replace('/\D/', '', $request->contact_number);
+            $request->replace($requestData);
              $data = $request->validate([
                 'student_id' => [
                     'required',
@@ -142,6 +153,11 @@ class StudentController extends Controller
                     Rule::unique('students')->ignore($id),
                 ],
             ]);
+            $number =$data['contact_number'];
+            $result = sprintf("(%s) %s-%s",
+                substr($number, 0, 3),
+                substr($number, 3, 3),
+                substr($number, 6));
             $student = Student::find($id);
             $student->student_id = $data['student_id'];
             $student->first_name = $data['first_name'];
@@ -149,7 +165,7 @@ class StudentController extends Controller
             $student->last_name = $data['last_name'];
             $student->age = $data['age'];
             $student->gender = $data['gender'];
-            $student->contact_number = $data['contact_number'];
+            $student->contact_number = $result;
             $student->email = $data['email'];
             $student->update();
     

@@ -193,12 +193,7 @@ export default {
   },
   computed: {
     sectionID() {
-      if (this.$route.params.id === 'undefined') {
-        this.$swal.fire('Undefined!', 'Please choose a section.', 'warning');
-        return this.$route.params.id;
-      } else {
-        return this.$route.params.id;
-      }
+      return this.$route.params.id;
     },
   },
   watch: {

@@ -93,7 +93,7 @@ class ProfileController extends Controller
             $instructor->update();
     
             $response = [
-                'message' => 'Instructor updated successfully!',
+                'message' => 'Profile updated successfully!',
                 'data' => $instructor,
             ];
     

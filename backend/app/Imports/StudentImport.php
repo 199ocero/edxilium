@@ -3,7 +3,6 @@
 namespace App\Imports;
 
 use App\Models\Student;
-use App\Models\StudentSection;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
@@ -40,7 +39,7 @@ class StudentImport implements ToModel, WithHeadingRow, WithValidation
 
     }
     public function rules():array{
-        return[
+        return [
             'student_id'=>'required|unique:students,student_id',
             'email' => 'required|unique:students,email',
             'first_name' => 'required|string',
@@ -49,6 +48,20 @@ class StudentImport implements ToModel, WithHeadingRow, WithValidation
             'age' => 'required',
             'gender' => 'required|string',
             'contact_number' => 'required',
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function customValidationMessages()
+    {
+        return [
+            'student_id.required' => 'The student id field is required.',
+            'first_name.required' => 'The first name field is required.',
+            'middle_name.required' => 'The middle name field is required.',
+            'last_name.required' => 'The last name field is required.',
+            'contact_number.required' => 'The contact number field is required.',
         ];
     }
 

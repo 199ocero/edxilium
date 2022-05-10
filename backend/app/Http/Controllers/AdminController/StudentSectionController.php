@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Imports\StudentImport;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
-use Illuminate\Validation\ValidationException;
+use Maatwebsite\Excel\Validators\ValidationException;
 
 class StudentSectionController extends Controller
 {
@@ -29,12 +29,43 @@ class StudentSectionController extends Controller
                 $section = Section::create([
                     'section' => $sectionUppercase,
                 ]);
-                $file = $request->file('file');
-                Excel::import(new StudentImport($section->id), $file);
-                $response = [
+                
+                
+                
+                $errors=[];
+                try {
+                    $file = $request->file('file');
+                    Excel::import(new StudentImport($section->id), $file);
+                } catch (ValidationException $e) {
+                    
+                    $failures = $e->failures();
+                    
+                    foreach ($failures as $failure) {
+                        
+                        $failure->row(); // row that went wrong
+                        $failure->attribute(); // either heading key (if using heading row concern) or column index
+                        $failure->errors(); // Actual error messages from Laravel validator
+                        $failure->values(); // The values of the row that has failed.
+
+                        $errors[$failure->attribute()] = $failure->errors();
+                        
+                    }
+                }
+                if(empty($errors)){
+                    
+                     $response = [
                         'message' => 'Student and section created successfully!',
-                ];
-                return response($response,200);
+                    ];
+                    return response($response,200);
+                }else{
+                    Section::find($section->id)->delete();
+                    $response = [
+                        'message'=> "The given data was invalid.",
+                        'errors' => $errors,
+                    ];
+                    return response($response,422);
+                }
+               
                 
             }
             

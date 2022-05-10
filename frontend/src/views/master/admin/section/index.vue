@@ -25,6 +25,7 @@
           <div class="custom-table">
             <div class="d-flex flex-wrap justify-content-center justify-content-sm-start px-3 pt-3 pb-0">
               <b-button variant="primary" class="m-1" v-b-modal.sectionModal> Add Section </b-button>
+              <b-button variant="secondary" class="m-1" @click="sampleCSV"> Sample CSV</b-button>
             </div>
             <div class="table-header">
               <div class="d-flex align-items-center">
@@ -136,7 +137,19 @@
         </b-form-group>
         <b-form-group label="CSV File">
           <b-form-file v-model="form.file" plain></b-form-file>
-          <span class="text-danger" v-text="errors.get('file')"></span>
+          <p class="mt-3 form-text text-muted">
+            <strong><span style="color: #009688">Note:</span></strong> If there are errors, it means that your file is either missing a data in csv file or you have uploaded an incorrect file format.
+          </p>
+          <p class="text-danger" v-text="errors.get('file')"></p>
+          <p class="text-danger" v-text="errors.get('student_id')"></p>
+          <p class="text-danger" v-text="errors.get('first_name')"></p>
+
+          <p class="text-danger" v-text="errors.get('middle_name')"></p>
+          <p class="text-danger" v-text="errors.get('last_name')"></p>
+          <p class="text-danger" v-text="errors.get('age')"></p>
+          <p class="text-danger" v-text="errors.get('gender')"></p>
+          <p class="text-danger" v-text="errors.get('contact_number')"></p>
+          <p class="text-danger" v-text="errors.get('email')"></p>
         </b-form-group>
         <div class="d-flex flex-wrap justify-content-center justify-content-sm-end">
           <b-button type="submit" variant="primary" class="mt-3 m-1">Create</b-button>
@@ -172,6 +185,14 @@ export default {
         id: '',
         section: '',
         file: null,
+        student_id: '',
+        first_name: '',
+        middle_name: '',
+        last_name: '',
+        age: '',
+        gender: '',
+        contact_number: '',
+        email: '',
       },
       errors: new Errors(),
       items: [],
@@ -324,11 +345,35 @@ export default {
     },
     sectionResetModal() {
       this.form.section = 'section';
+      this.form.first_name = 'first_name';
+      this.form.student_id = 'student_id';
+      this.form.middle_name = 'middle_name';
+      this.form.last_name = 'last_name';
+      this.form.age = 'age';
+      this.form.gender = 'gender';
+      this.form.contact_number = 'contact_number';
+      this.form.email = 'email';
 
       this.form.section = '';
+      this.form.first_name = '';
+      this.form.student_id = '';
+      this.form.middle_name = '';
+      this.form.last_name = '';
+      this.form.age = '';
+      this.form.gender = '';
+      this.form.contact_number = '';
+      this.form.email = '';
 
       this.errors.clear('section');
       this.errors.clear('file');
+      this.errors.clear('first_name');
+      this.errors.clear('student_id');
+      this.errors.clear('middle_name');
+      this.errors.clear('last_name');
+      this.errors.clear('age');
+      this.errors.clear('gender');
+      this.errors.clear('contact_number');
+      this.errors.clear('email');
     },
     sectionEditResetModal() {
       this.form.section = 'section';
@@ -336,6 +381,15 @@ export default {
       this.form.section = '';
 
       this.errors.clear('section');
+    },
+    sampleCSV() {
+      this.$swal.fire({
+        icon: 'info',
+        title: 'Section CSV File',
+        text: 'Please download this CSV template and change the data according to this format.',
+        footer: '<a target="_blank" href="https://docs.google.com/spreadsheets/d/1sLZi_r9pRzjHrs0JmPgtLyMwEGEmPzCqHcL__t922dM/edit?usp=sharing">Download CSV Template</a>',
+        padding: '2em',
+      });
     },
     on_filtered(filtered_items) {
       this.refresh_table(filtered_items.length);

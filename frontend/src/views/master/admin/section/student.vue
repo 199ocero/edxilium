@@ -153,7 +153,12 @@
             <span class="text-danger" v-text="errors.get('age')"></span>
           </b-form-group>
           <b-form-group label="Gender" class="col-md-3">
-            <b-input v-model="form.gender" name="gender" type="text" placeholder="Gender"></b-input>
+            <!-- Default Select -->
+            <b-select v-model="form.gender">
+              <b-select-option :value="null" disabled>Select Gender</b-select-option>
+              <b-select-option value="Male">Male</b-select-option>
+              <b-select-option value="Female">Female</b-select-option>
+            </b-select>
             <span class="text-danger" v-text="errors.get('gender')"></span>
           </b-form-group>
           <b-form-group label="Contact Number" class="col-md-3">
@@ -302,21 +307,25 @@ export default {
       ];
       let fetchTodo = async () => {
         this.items = [];
-
-        this.$http
-          .get('/api/student-section/' + this.$route.params.id, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`,
-            },
-          })
-          .then((res) => {
-            this.items = res.data.data;
-            this.table_option.total_rows = this.items.length;
-            this.get_meta();
-          })
-          .catch((errors) => {
-            console.log(errors);
-          });
+        if (this.$route.params.id == 'undefined') {
+          this.$swal.fire('Not Found!', 'Please choose a section.', 'warning');
+          this.$router.push({ name: 'adminSection' });
+        } else {
+          this.$http
+            .get('/api/student-section/' + this.$route.params.id, {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+              },
+            })
+            .then((res) => {
+              this.items = res.data.data;
+              this.table_option.total_rows = this.items.length;
+              this.get_meta();
+            })
+            .catch((errors) => {
+              console.log(errors);
+            });
+        }
       };
 
       fetchTodo();

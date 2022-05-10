@@ -130,6 +130,9 @@ class InstructorController extends Controller
         $user = auth()->user();
         $user = $user->role;
         if($user=='admin'){
+            $requestData = $request->all();
+            $requestData['contact_number'] = preg_replace('/\D/', '', $request->contact_number);
+            $request->replace($requestData);
              $data = $request->validate([
                 'first_name' => 'required|string',
                 'middle_name' => 'required|string',
@@ -138,13 +141,18 @@ class InstructorController extends Controller
                 'gender' => 'required|string',
                 'contact_number' => 'required|digits:10',
             ]);
+            $number =$data['contact_number'];
+            $result = sprintf("(%s) %s-%s",
+                substr($number, 0, 3),
+                substr($number, 3, 3),
+                substr($number, 6));
             $instructor = Instructor::find($id);
             $instructor->first_name = $data['first_name'];
             $instructor->middle_name = $data['middle_name'];
             $instructor->last_name = $data['last_name'];
             $instructor->age = $data['age'];
             $instructor->gender = $data['gender'];
-            $instructor->contact_number = $data['contact_number'];
+            $instructor->contact_number = $result;
             $instructor->update();
     
             $response = [

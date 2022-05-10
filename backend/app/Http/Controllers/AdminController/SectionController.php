@@ -16,13 +16,23 @@ class SectionController extends Controller
      */
     public function index()
     {
-        $section = Section::all();
-        $response = [
-            'message' => 'Fetch all data successfully!',
-            'data' => $section
-        ];
+        $user = auth()->user();
+        $user = $user->role;
+        if($user=='admin'){
+            $section = Section::latest()->get();
+            $response = [
+                'message' => 'Fetch all data successfully!',
+                'data' => $section
+            ];
 
-        return response($response,200);
+            return response($response,200);
+        }else{
+            $response = [
+                'message' => 'User unauthorized.',
+            ];
+            return response($response,401);
+        }
+        
     }
 
     /**
@@ -33,7 +43,10 @@ class SectionController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->validate([
+         $user = auth()->user();
+        $user = $user->role;
+        if($user=='admin'){
+            $data = $request->validate([
             'section' => 'required|unique:sections,section|string',
         ]);
         $section = Section::create([
@@ -45,6 +58,13 @@ class SectionController extends Controller
         ];
 
         return response($response,201);
+        }else{
+            $response = [
+                'message' => 'User unauthorized.',
+            ];
+            return response($response,401);
+        }
+        
     }
 
     /**
@@ -55,13 +75,23 @@ class SectionController extends Controller
      */
     public function show($id)
     {
-        $section = Section::find($id);
+        $user = auth()->user();
+        $user = $user->role;
+        if($user=='admin'){
+            $section = Section::find($id);
         $response = [
             'message' => 'Fetch specific section successfully!',
             'data' => $section,
         ];
 
         return response($response,200);
+        }else{
+            $response = [
+                'message' => 'User unauthorized.',
+            ];
+            return response($response,401);
+        }
+        
     }
 
     /**
@@ -73,7 +103,10 @@ class SectionController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $section = Section::find($id);
+        $user = auth()->user();
+        $user = $user->role;
+        if($user=='admin'){
+            $section = Section::find($id);
         $section->update($request->all());
 
         $response = [
@@ -82,6 +115,13 @@ class SectionController extends Controller
         ];
 
         return response($response,200);
+        }else{
+            $response = [
+                'message' => 'User unauthorized.',
+            ];
+            return response($response,401);
+        }
+        
     }
 
     /**
@@ -92,6 +132,7 @@ class SectionController extends Controller
      */
     public function destroy($id)
     {
+        
         $user = auth()->user();
         $user = $user->role;
         if($user=='admin'){
