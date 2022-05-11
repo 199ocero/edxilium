@@ -19,7 +19,7 @@ class SchoolYearController extends Controller
         $user = auth()->user();
         $user = $user->role;
         if($user=='admin'){
-            $schoolyear = SchoolYear::all();
+            $schoolyear = SchoolYear::latest()->get();
             $response = [
                 'message' => 'Fetch all data successfully!',
                 'data' => $schoolyear
@@ -51,7 +51,7 @@ class SchoolYearController extends Controller
                 'end_year' => 'required|string|digits:4',
             ]);
             $year = SchoolYear::where('start_year',$data['start_year'])->where('end_year',$data['end_year'])->get();
-            if($year){
+            if(!$year->isEmpty()){
                 throw ValidationException::withMessages([
                     'start_year' => 'This school year combination is already added in our record. Please use another combination.'
                 ]);

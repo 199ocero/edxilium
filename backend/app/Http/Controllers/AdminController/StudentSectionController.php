@@ -21,7 +21,7 @@ class StudentSectionController extends Controller
             ]);
             $sectionUppercase = strtoupper($data['section']);
             $sectionName = Section::where('section',$sectionUppercase)->first();
-            if($sectionName){
+            if($sectionName!=null){
                 throw ValidationException::withMessages([
                     'section' => 'The section has already been taken.'
                 ]);

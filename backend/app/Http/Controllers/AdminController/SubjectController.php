@@ -5,6 +5,7 @@ namespace App\Http\Controllers\AdminController;
 use App\Models\Subject;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Validation\ValidationException;
 
 class SubjectController extends Controller
 {
@@ -49,16 +50,25 @@ class SubjectController extends Controller
                 'subject' => 'required|unique:subjects,subject|string',
                 'year_level' => 'required|string',
             ]);
-            $subject = Subject::create([
-                'subject' => $data['subject'],
-                'year_level' => $data['year_level'],
-            ]);
-            $response = [
-                'message' => 'Subject created successfully!',
-                'data' => $subject,
-            ];
+            $subjectUppercase = strtoupper($data['subject']);
+            $subjectName = Subject::where('subject',$subjectUppercase)->first();
+            if($subjectName !=null){
+                throw ValidationException::withMessages([
+                    'subject' => 'The subject has already been taken.'
+                ]);
+            }else{
+                 $subject = Subject::create([
+                    'subject' => $data['subject'],
+                    'year_level' => $data['year_level'],
+                ]);
+                $response = [
+                    'message' => 'Subject created successfully!',
+                    'data' => $subject,
+                ];
 
-            return response($response,201);
+                return response($response,201);
+            }
+           
         }else{
              $response = [
                 'message' => 'User unauthorized.',

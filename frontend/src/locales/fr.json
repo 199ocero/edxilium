@@ -19,5 +19,6 @@
     "starter_kit": "Kit de démarrage",
     "documentation": "Documentation",
     "ui_kit": "Trousse d'interface utilisateur",
-    "more": "Suite"
+    "more": "Suite",
+    "section":"Section"
 }

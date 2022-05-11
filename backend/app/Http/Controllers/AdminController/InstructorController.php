@@ -38,6 +38,27 @@ class InstructorController extends Controller
 
         
     }
+    public function getInstructor()
+    {
+        $user = auth()->user();
+        $user = $user->role;
+        if($user=='admin'){
+            $instructor = Instructor::latest()->get();
+            $response = [
+                'message' => 'Fetch all data successfully!',
+                'data' => $instructor
+            ];
+            return response($response,200);
+        }else{
+            $response = [
+                'message' => 'User unauthorized.',
+            ];
+            return response($response,401);
+        }
+       
+
+        
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -55,6 +76,8 @@ class InstructorController extends Controller
         $password = Str::random(30);
 
         $data = $request->validate([
+            'first_name'=>'required|string',
+            'last_name'=>'required|string',
             'email' => 'required|unique:users,email|string',
         ]);
         if($user=='admin'){
@@ -66,6 +89,8 @@ class InstructorController extends Controller
             ]);
             Instructor::create([
                 'instructor_id' => $instructor->id,
+                'first_name' => $data['first_name'],
+                'last_name' => $data['last_name'],
             ]);
             $token = $instructor->createToken('token')->plainTextToken;
             $response = [

@@ -68,17 +68,6 @@
           </a>
         </router-link>
         <!-- Admin Section -->
-        <!-- <router-link v-if="is_admin" tag="li" to="/admin/section" class="menu" @click.native="toggleMobileMenu">
-          <a class="dropdown-toggle">
-            <div class="">
-              <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                <line x1="9" y1="3" x2="9" y2="21"></line>
-              </svg>
-              <span>{{ $t('Section') }}</span>
-            </div>
-          </a>
-        </router-link> -->
         <li class="menu" v-if="is_admin">
           <a href="#section" v-b-toggle class="dropdown-toggle" @click.prevent>
             <div class="">
@@ -86,7 +75,7 @@
                 <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                 <line x1="9" y1="3" x2="9" y2="21"></line>
               </svg>
-              <span>{{ $t('Section') }}</span>
+              <span>Section</span>
             </div>
             <div>
               <svg
@@ -108,11 +97,10 @@
           <b-collapse id="section" accordion="menu">
             <ul class="collapse submenu list-unstyled show">
               <router-link tag="li" to="/admin/section" @click.native="toggleMobileMenu"><a>Section</a></router-link>
-              <router-link tag="li" :to="`/admin/section/${this.sectionID}`" @click.native="toggleMobileMenu"><a>Student</a></router-link>
+              <router-link tag="li" :to="'/admin/section/' + sectionID" @click.native="toggleMobileMenu"><a>Student</a></router-link>
             </ul>
           </b-collapse>
         </li>
-
         <!-- Admin Subject -->
         <router-link v-if="is_admin" tag="li" to="/admin/subject" class="menu" @click.native="toggleMobileMenu">
           <a class="dropdown-toggle">

@@ -19,12 +19,12 @@
     <div class="row layout-top-spacing">
       <div class="col-xl-12 col-lg-12 col-md-12 col-12 layout-spacing">
         <div class="seperator-header">
-          <h4>Assign Section & Subject</h4>
+          <h4>Assigning Instructor - Section - Subject - Year Level - School Year</h4>
         </div>
         <div class="panel br-6 p-0">
           <div class="custom-table">
             <div class="d-flex flex-wrap justify-content-center justify-content-sm-start px-3 pt-3 pb-0">
-              <b-button variant="primary" class="m-1"> Assign Subject & Section </b-button>
+              <b-button variant="primary" class="m-1" v-b-modal.assignModal @click="getData">Assign</b-button>
             </div>
             <div class="table-header">
               <div class="d-flex align-items-center">
@@ -73,20 +73,31 @@
               :show-empty="true"
               @filtered="on_filtered"
             >
-              <template #cell(instructor)="data"> {{ data.item.instructor['first_name'] }} {{ data.item.instructor['middle_name'][0] }}. {{ data.item.instructor['last_name'] }} </template>
+              <template #cell(instructor)="data">
+                <span v-if="data.item.instructor == null">Deleted</span>
+                <span v-else-if="data.item.instructor['middle_name'] == null"> {{ data.item.instructor['first_name'] }} {{ data.item.instructor['last_name'] }} </span>
+                <span v-else>{{ data.item.instructor['first_name'] }} {{ data.item.instructor['middle_name'][0] }}. {{ data.item.instructor['last_name'] }}</span>
+              </template>
+
               <template #cell(section)="data">
-                {{ data.item.section['section'] }}
+                <span v-if="data.item.section == null">Deleted</span>
+                <span v-else>{{ data.item.section['section'] }}</span>
               </template>
               <template #cell(subject)="data">
-                {{ data.item.subject['subject'] }}
+                <span v-if="data.item.subject == null">Deleted</span>
+                <span v-else>{{ data.item.subject['subject'] }}</span>
               </template>
               <template #cell(year_level)="data">
-                {{ data.item.subject['year_level'] }}
+                <span v-if="data.item.subject == null">Deleted</span>
+                <span v-else>{{ data.item.subject['year_level'] }}</span>
               </template>
-              <template #cell(school_year)="data"> {{ data.item.school_year['start_year'] }} - {{ data.item.school_year['end_year'] }} </template>
-              <template #cell(action)>
-                <b-button size="sm mr-3" pill variant="dark">Edit</b-button>
-                <b-button size="sm" pill variant="danger">Delete</b-button>
+              <template #cell(school_year)="data">
+                <span v-if="data.item.school_year == null">Deleted</span>
+                <span v-else>{{ data.item.school_year['start_year'] }} - {{ data.item.school_year['end_year'] }}</span>
+              </template>
+              <template #cell(action)="data">
+                <b-button size="sm mr-3" pill variant="dark" v-b-modal.assignEditModal @click="editAssign(data.item.id)">Edit</b-button>
+                <b-button size="sm" pill variant="danger" @click="deleteAssign(data.item.id)">Delete</b-button>
               </template>
             </b-table>
 
@@ -133,19 +144,209 @@
           </div>
         </div>
       </div>
+      <vue-progress-bar></vue-progress-bar>
     </div>
+    <!--Assign Modal-->
+    <b-modal id="assignModal" title="Assign" centered hide-footer @hidden="assignResetModal">
+      <b-form action="#" @submit.prevent="addAssign" @keydown="errors.clear($event.target.name)">
+        <b-form-group label="Instructor" class="select2">
+          <multiselect
+            v-model="form.instructor_id"
+            :options="instructor"
+            track-by="id"
+            :custom-label="fullName"
+            :searchable="true"
+            placeholder="Select Instructor"
+            selected-label=""
+            select-label=""
+            deselect-label=""
+            @select="onSelect1"
+          >
+          </multiselect>
+          <span class="text-danger" v-text="errors.get('instructor_id')"></span>
+        </b-form-group>
+        <b-form-group label="Section" class="select2">
+          <multiselect
+            v-model="form.section_id"
+            :options="section"
+            track-by="id"
+            :custom-label="sectionName"
+            :searchable="true"
+            placeholder="Select Section"
+            selected-label=""
+            select-label=""
+            deselect-label=""
+            @select="onSelect2"
+          >
+          </multiselect>
+          <span class="text-danger" v-text="errors.get('section_id')"></span>
+        </b-form-group>
+        <b-form-group label="Subject and Year Level" class="select2">
+          <multiselect
+            v-model="form.subject_id"
+            :options="subject"
+            track-by="id"
+            :custom-label="subjectYear"
+            :searchable="true"
+            placeholder="Select Subject and Year Level"
+            selected-label=""
+            select-label=""
+            deselect-label=""
+            @select="onSelect3"
+          >
+          </multiselect>
+          <span class="text-danger" v-text="errors.get('subject_id')"></span>
+        </b-form-group>
+        <b-form-group label="School Year" class="select2">
+          <multiselect
+            v-model="form.school_year_id"
+            :options="school_year"
+            track-by="id"
+            :custom-label="schoolYear"
+            :searchable="true"
+            placeholder="Select School Year"
+            selected-label=""
+            select-label=""
+            deselect-label=""
+            @select="onSelect4"
+          >
+          </multiselect>
+          <span class="text-danger" v-text="errors.get('school_year_id')"></span>
+        </b-form-group>
+        <hr />
+        <div class="d-flex flex-wrap justify-content-center justify-content-sm-end">
+          <b-button type="submit" variant="primary" class="mt-3 m-1">Create</b-button>
+          <b-button variant="danger" class="mt-3 m-1" @click="$bvModal.hide('assignModal')">Cancel</b-button>
+        </div>
+      </b-form>
+    </b-modal>
+    <!--Assign Edit Modal-->
+    <b-modal id="assignEditModal" title="Edit Assign" centered hide-footer @hidden="assignResetModal">
+      <b-form action="#" @submit.prevent="updateAssign(form.id)" @keydown="errors.clear($event.target.name)">
+        <b-form-group label="Instructor" class="select2">
+          <multiselect
+            v-model="form.instructor_id"
+            :options="instructor"
+            track-by="id"
+            :custom-label="fullName"
+            :searchable="true"
+            placeholder="Select Instructor"
+            selected-label=""
+            select-label=""
+            deselect-label=""
+            @select="onSelect1"
+          >
+          </multiselect>
+          <span class="text-danger" v-text="errors.get('instructor_id')"></span>
+        </b-form-group>
+        <b-form-group label="Section" class="select2">
+          <multiselect
+            v-model="form.section_id"
+            :options="section"
+            track-by="id"
+            :custom-label="sectionName"
+            :searchable="true"
+            placeholder="Select Section"
+            selected-label=""
+            select-label=""
+            deselect-label=""
+            @select="onSelect2"
+          >
+          </multiselect>
+          <span class="text-danger" v-text="errors.get('section_id')"></span>
+        </b-form-group>
+        <b-form-group label="Subject and Year Level" class="select2">
+          <multiselect
+            v-model="form.subject_id"
+            :options="subject"
+            track-by="id"
+            :custom-label="subjectYear"
+            :searchable="true"
+            placeholder="Select Subject and Year Level"
+            selected-label=""
+            select-label=""
+            deselect-label=""
+            @select="onSelect3"
+          >
+          </multiselect>
+          <span class="text-danger" v-text="errors.get('subject_id')"></span>
+        </b-form-group>
+        <b-form-group label="School Year" class="select2">
+          <multiselect
+            v-model="form.school_year_id"
+            :options="school_year"
+            track-by="id"
+            :custom-label="schoolYear"
+            :searchable="true"
+            placeholder="Select School Year"
+            selected-label=""
+            select-label=""
+            deselect-label=""
+            @select="onSelect4"
+          >
+          </multiselect>
+          <span class="text-danger" v-text="errors.get('school_year_id')"></span>
+        </b-form-group>
+        <hr />
+        <div class="d-flex flex-wrap justify-content-center justify-content-sm-end">
+          <b-button type="submit" variant="primary" class="mt-3 m-1">Update</b-button>
+          <b-button variant="danger" class="mt-3 m-1" @click="$bvModal.hide('assignEditModal')">Cancel</b-button>
+        </div>
+      </b-form>
+    </b-modal>
   </div>
 </template>
 <style scoped>
 .layout-px-spacing {
   min-height: calc(100vh - 170px) !important;
 }
+.select2 .multiselect__option--highlight {
+  background: #fff;
+  color: #4361ee;
+}
+.select2 .multiselect__option--selected {
+  background-color: rgba(27, 85, 226, 0.23921568627450981);
+  color: #4361ee;
+  font-weight: normal;
+}
+.select2 .multiselect__option--disabled {
+  background: inherit !important;
+}
+.select2 .multiselect__tag {
+  color: #000;
+  background: #e4e4e4;
+}
+.select2 .multiselect__tag-icon:after {
+  color: #000 !important;
+}
+.select2 .multiselect__tag-icon:focus,
+.select2 .multiselect__tag-icon:hover {
+  background: inherit;
+}
 </style>
 <script>
+import Multiselect from 'vue-multiselect';
+import 'vue-multiselect/dist/vue-multiselect.min.css';
+import Errors from '@/main.js';
 export default {
   metaInfo: { title: 'Assign' },
+  components: {
+    Multiselect,
+  },
   data() {
     return {
+      form: {
+        id: '',
+        instructor_id: '',
+        section_id: '',
+        subject_id: '',
+        school_year_id: '',
+      },
+      instructor: [],
+      section: [],
+      subject: [],
+      school_year: [],
+      errors: new Errors(),
       items: [],
       columns: [],
       table_option: { total_rows: 0, current_page: 1, page_size: 10, search_text: '' },
@@ -162,8 +363,21 @@ export default {
   },
   mounted() {
     this.bind_data();
+    this.getData();
   },
   methods: {
+    fullName({ first_name, last_name }) {
+      return `${first_name} ${last_name}`;
+    },
+    subjectYear({ subject, year_level }) {
+      return `${subject} - ${year_level}`;
+    },
+    schoolYear({ start_year, end_year }) {
+      return `${start_year} - ${end_year}`;
+    },
+    sectionName({ section }) {
+      return `${section}`;
+    },
     bind_data() {
       this.columns = [
         { key: 'instructor', label: 'Instructor Name' },
@@ -193,6 +407,197 @@ export default {
       };
 
       fetchTodo();
+    },
+    getData() {
+      this.$http
+        .get('/api/instructor/all', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        })
+        .then((response) => {
+          this.instructor = response.data.data;
+        })
+        .catch((errors) => {
+          this.errors.record(errors.response.data.errors);
+        });
+
+      this.$http
+        .get('/api/section', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        })
+        .then((response) => {
+          this.section = response.data.data;
+        })
+        .catch((errors) => {
+          this.errors.record(errors.response.data.errors);
+        });
+      this.$http
+        .get('/api/subject', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        })
+        .then((response) => {
+          this.subject = response.data.data;
+        })
+        .catch((errors) => {
+          this.errors.record(errors.response.data.errors);
+        });
+      this.$http
+        .get('/api/school-year', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        })
+        .then((response) => {
+          this.school_year = response.data.data;
+        })
+        .catch((errors) => {
+          this.errors.record(errors.response.data.errors);
+        });
+    },
+    addAssign() {
+      this.form.instructor_id = this.form.instructor_id.id;
+      this.form.section_id = this.form.section_id.id;
+      this.form.subject_id = this.form.subject_id.id;
+      this.form.school_year_id = this.form.school_year_id.id;
+      this.$Progress.start();
+      this.$http
+        .post('/api/assign', this.form, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        })
+        .then(() => {
+          this.$toaster.success('Assign Created Successfuly!');
+          this.$nextTick(() => {
+            this.$bvModal.hide('assignModal');
+          });
+          this.bind_data();
+          this.$Progress.finish();
+        })
+        .catch((errors) => {
+          this.errors.record(errors.response.data.errors);
+          this.$Progress.fail();
+          this.form.instructor_id = [];
+          this.form.section_id = [];
+          this.form.subject_id = [];
+          this.form.school_year_id = [];
+          this.errors.record(errors.response.data.errors);
+        });
+    },
+    deleteAssign(id) {
+      // console.log(id);
+      // this.$swal('Hello Vue world!!!');
+      this.$swal
+        .fire({
+          title: 'Are you sure?',
+          text: "You won't be able to revert this!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, delete it!',
+        })
+        .then((result) => {
+          if (result.isConfirmed) {
+            //Send delete request
+            this.$Progress.start();
+            this.$http
+              .delete('/api/assign/' + id, {
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+              })
+              .then(() => {
+                this.$swal.fire('Deleted!', 'Assign has been deleted.', 'success');
+                this.bind_data();
+                this.$Progress.finish();
+              })
+              .catch(() => {
+                this.$swal.fire('Failed!', 'There was something wrong.', 'warning');
+                this.$Progress.fail();
+              });
+          }
+        });
+    },
+    editAssign($id) {
+      this.$http
+        .get('/api/assign/' + $id, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        })
+        .then((response) => {
+          this.form.id = response.data.data.id;
+          this.form.instructor_id = this.instructor.find((option) => option.id === response.data.data.instructor.id);
+          this.form.section_id = this.section.find((option) => option.id === response.data.data.section.id);
+          this.form.subject_id = this.subject.find((option) => option.id === response.data.data.subject.id);
+          this.form.school_year_id = this.school_year.find((option) => option.id === response.data.data.school_year.id);
+        })
+        .catch((errors) => {
+          this.errors.record(errors.response.data.errors);
+        });
+    },
+    updateAssign($id) {
+      let self = this;
+
+      this.form.instructor_id = this.form.instructor_id.id;
+      this.form.section_id = this.form.section_id.id;
+      this.form.subject_id = this.form.subject_id.id;
+      this.form.school_year_id = this.form.school_year_id.id;
+
+      var axios = require('axios');
+      var data = this.form;
+      var config = {
+        method: 'put',
+        url: '/api/assign/' + $id,
+        headers: {
+          Authorization: 'Bearer ' + localStorage.getItem('token'),
+        },
+        data: data,
+      };
+      self.$Progress.start();
+      axios(config)
+        .then(function () {
+          self.$toaster.success('Assign Updated Successfuly!');
+          self.$nextTick(() => {
+            self.$bvModal.hide('assignEditModal');
+          });
+          self.bind_data();
+          self.$Progress.finish();
+        })
+        .catch(function (errors) {
+          self.errors.record(errors.response.data.errors);
+          self.$Progress.fail();
+        });
+    },
+    assignResetModal() {
+      this.form.instructor_id = [];
+      this.form.section_id = [];
+      this.form.subject_id = [];
+      this.form.school_year_id = [];
+      // this will remove the error
+      this.errors.clear('instructor_id');
+      this.errors.clear('section_id');
+      this.errors.clear('subject_id');
+      this.errors.clear('school_year_id');
+    },
+
+    onSelect1() {
+      this.errors.clear('instructor_id');
+    },
+    onSelect2() {
+      this.errors.clear('section_id');
+    },
+    onSelect3() {
+      this.errors.clear('subject_id');
+    },
+    onSelect4() {
+      this.errors.clear('school_year_id');
     },
     on_filtered(filtered_items) {
       this.refresh_table(filtered_items.length);

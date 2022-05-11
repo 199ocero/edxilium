@@ -54,6 +54,7 @@ Route::group(['middleware'=>['auth:sanctum','verified']],function(){
     Route::post('/instructor',[InstructorController::class,'store']);
     // Get all instructor
     Route::get('/instructor',[InstructorController::class,'index']);
+    Route::get('/instructor/all',[InstructorController::class,'getInstructor']);
     // Get specific instructor
     Route::get('/instructor/{id}',[InstructorController::class,'show']);
     // Update specific instructor
@@ -135,6 +136,12 @@ Route::group(['middleware'=>['auth:sanctum','verified']],function(){
     Route::post('/assign',[AssignController::class,'store']);
     // Get all assign
     Route::get('/assign',[AssignController::class,'index']);
+    // Delete specific assign
+    Route::delete('/assign/{id}',[AssignController::class,'destroy']);
+    // Get specific assign
+    Route::get('/assign/{id}',[AssignController::class,'show']);
+    // Update specific assign
+    Route::put('/assign/{id}',[AssignController::class,'update']);
 });
 
 

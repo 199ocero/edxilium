@@ -138,6 +138,14 @@
     <!--Add Modal for Instructor -->
     <b-modal id="instructorModal" title="Add Instructor Account" centered hide-footer @show="registerResetModal" @hidden="registerResetModal">
       <b-form action="#" @submit.prevent="registerInstructor" @keydown="errors.clear($event.target.name)">
+        <b-form-group label="First Name">
+          <b-input v-model="form.first_name" name="first_name" type="text" placeholder="First Name"></b-input>
+          <span class="text-danger" v-text="errors.get('first_name')"></span>
+        </b-form-group>
+        <b-form-group label="Last Name">
+          <b-input v-model="form.last_name" name="last_name" type="text" placeholder="Last Name"></b-input>
+          <span class="text-danger" v-text="errors.get('last_name')"></span>
+        </b-form-group>
         <b-form-group label="Email Address">
           <b-input v-model="form.email" name="email" type="email" placeholder="Email Address"></b-input>
           <span class="text-danger" v-text="errors.get('email')"></span>
