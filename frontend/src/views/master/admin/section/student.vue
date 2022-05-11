@@ -155,7 +155,7 @@
           <b-form-group label="Gender" class="col-md-3">
             <!-- Default Select -->
             <b-select v-model="form.gender">
-              <b-select-option :value="null" disabled>Select Gender</b-select-option>
+              <b-select-option value disabled>Select Gender</b-select-option>
               <b-select-option value="Male">Male</b-select-option>
               <b-select-option value="Female">Female</b-select-option>
             </b-select>
@@ -210,7 +210,7 @@
           <b-form-group label="Gender" class="col-md-3">
             <!-- Default Select -->
             <b-select v-model="form.gender">
-              <b-select-option :value="null" disabled>Select Gender</b-select-option>
+              <b-select-option value disabled>Select Gender</b-select-option>
               <b-select-option value="Male">Male</b-select-option>
               <b-select-option value="Female">Female</b-select-option>
             </b-select>

@@ -7,7 +7,7 @@
             <nav class="breadcrumb-one" aria-label="breadcrumb">
               <ol class="breadcrumb">
                 <li class="breadcrumb-item active" aria-current="page">
-                  <span>Admin - School Year List</span>
+                  <span>Instructor - Assign</span>
                 </li>
               </ol>
             </nav>
@@ -17,14 +17,14 @@
     </portal>
 
     <div class="row layout-top-spacing">
-      <div class="col-xl-12 col-lg-12 col-sm-12 layout-spacing">
+      <div class="col-xl-12 col-lg-12 col-md-12 col-12 layout-spacing">
         <div class="seperator-header">
-          <h4>View School Year List</h4>
+          <h4>Assign Section & Subject</h4>
         </div>
         <div class="panel br-6 p-0">
           <div class="custom-table">
             <div class="d-flex flex-wrap justify-content-center justify-content-sm-start px-3 pt-3 pb-0">
-              <b-button variant="primary" class="m-1" v-b-modal.schoolYearModal> Add School Year </b-button>
+              <b-button variant="primary" class="m-1"> Assign Subject & Section </b-button>
             </div>
             <div class="table-header">
               <div class="d-flex align-items-center">
@@ -73,9 +73,20 @@
               :show-empty="true"
               @filtered="on_filtered"
             >
-              <template #cell(action)="data">
-                <b-button size="sm mr-3" pill variant="dark" v-b-modal.schoolYearEditModal @click="editSchoolYear(data.item.id)">Edit</b-button>
-                <b-button size="sm" pill variant="danger" @click="deleteSchoolYear(data.item.id)">Delete</b-button>
+              <template #cell(instructor)="data"> {{ data.item.instructor['first_name'] }} {{ data.item.instructor['middle_name'][0] }}. {{ data.item.instructor['last_name'] }} </template>
+              <template #cell(section)="data">
+                {{ data.item.section['section'] }}
+              </template>
+              <template #cell(subject)="data">
+                {{ data.item.subject['subject'] }}
+              </template>
+              <template #cell(year_level)="data">
+                {{ data.item.subject['year_level'] }}
+              </template>
+              <template #cell(school_year)="data"> {{ data.item.school_year['start_year'] }} - {{ data.item.school_year['end_year'] }} </template>
+              <template #cell(action)>
+                <b-button size="sm mr-3" pill variant="dark">Edit</b-button>
+                <b-button size="sm" pill variant="danger">Delete</b-button>
               </template>
             </b-table>
 
@@ -122,63 +133,19 @@
           </div>
         </div>
       </div>
-      <vue-progress-bar></vue-progress-bar>
     </div>
-    <!--Add Modal for Subject -->
-    <b-modal id="schoolYearModal" title="Add School Year" centered hide-footer @show="addResetModal" @hidden="addResetModal">
-      <b-form action="#" @submit.prevent="addSchoolYear" @keydown="errors.clear($event.target.name)">
-        <b-form-group label="Start Year">
-          <b-input v-model="form.start_year" name="start_year" v-mask="'####'" placeholder="____"></b-input>
-          <span class="text-danger" v-text="errors.get('start_year')"></span>
-        </b-form-group>
-        <b-form-group label="End Year">
-          <b-input v-model="form.end_year" name="end_year" v-mask="'####'" placeholder="____"></b-input>
-          <span class="text-danger" v-text="errors.get('end_year')"></span>
-        </b-form-group>
-        <hr />
-        <div class="d-flex flex-wrap justify-content-center justify-content-sm-end">
-          <b-button type="submit" variant="primary" class="mt-3 m-1">Create</b-button>
-          <b-button variant="danger" class="mt-3 m-1" @click="$bvModal.hide('schoolYearModal')">Cancel</b-button>
-        </div>
-      </b-form>
-    </b-modal>
-    <!--Edit Modal for Subject -->
-    <b-modal id="schoolYearEditModal" title="Edit School Year" centered hide-footer @hidden="editResetModal">
-      <b-form action="#" @submit.prevent="updateSchoolYear" @keydown="errors.clear($event.target.name)">
-        <b-input hidden v-model="form.id"></b-input>
-        <b-form-group label="Start Year">
-          <b-input v-model="form.start_year" name="start_year" v-mask="'####'" placeholder="____"></b-input>
-          <span class="text-danger" id="start_year" v-text="errors.get('start_year')"></span>
-        </b-form-group>
-        <b-form-group label="End Year">
-          <b-input v-model="form.end_year" name="end_year" v-mask="'####'" placeholder="____"></b-input>
-          <span class="text-danger" v-text="errors.get('end_year')"></span>
-        </b-form-group>
-        <hr />
-        <div class="d-flex flex-wrap justify-content-center justify-content-sm-end">
-          <b-button type="submit" variant="primary" class="mt-3 m-1">Update</b-button>
-          <b-button variant="danger" class="mt-3 m-1" @click="$bvModal.hide('schoolYearEditModal')">Cancel</b-button>
-        </div>
-      </b-form>
-    </b-modal>
   </div>
 </template>
-
+<style scoped>
+.layout-px-spacing {
+  min-height: calc(100vh - 170px) !important;
+}
+</style>
 <script>
-import Vue from 'vue';
-import VueMask from 'v-mask';
-Vue.use(VueMask);
-import Errors from '@/main.js';
 export default {
-  metaInfo: { title: 'School Year' },
+  metaInfo: { title: 'Assign' },
   data() {
     return {
-      form: {
-        id: '',
-        start_year: '',
-        end_year: '',
-      },
-      errors: new Errors(),
       items: [],
       columns: [],
       table_option: { total_rows: 0, current_page: 1, page_size: 10, search_text: '' },
@@ -199,15 +166,18 @@ export default {
   methods: {
     bind_data() {
       this.columns = [
-        { key: 'start_year', label: 'Start Year' },
-        { key: 'end_year', label: 'End Year' },
+        { key: 'instructor', label: 'Instructor Name' },
+        { key: 'section', label: 'Section Name' },
+        { key: 'subject', label: 'Subject Name' },
+        { key: 'year_level', label: 'Year Level' },
+        { key: 'school_year', label: 'School Year' },
         { key: 'action', label: 'Actions', class: 'actions text-center' },
       ];
       let fetchTodo = async () => {
         this.items = [];
 
         this.$http
-          .get('/api/school-year', {
+          .get('/api/assign', {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('token')}`,
             },
@@ -223,119 +193,6 @@ export default {
       };
 
       fetchTodo();
-    },
-    addSchoolYear() {
-      this.$Progress.start();
-      this.$http
-        .post('/api/school-year', this.form, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        })
-        .then(() => {
-          this.$toaster.success('School Year Created Successfuly!');
-          this.$nextTick(() => {
-            this.$bvModal.hide('schoolYearModal');
-          });
-          this.bind_data();
-          this.$Progress.finish();
-        })
-        .catch((errors) => {
-          this.errors.record(errors.response.data.errors);
-          this.$Progress.fail();
-        });
-    },
-    deleteSchoolYear(id) {
-      this.$swal
-        .fire({
-          title: 'Are you sure?',
-          text: "You won't be able to revert this!",
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Yes, delete it!',
-        })
-        .then((result) => {
-          if (result.isConfirmed) {
-            //Send delete request
-            this.$Progress.start();
-            this.$http
-              .delete('/api/school-year/' + id, {
-                headers: {
-                  Authorization: `Bearer ${localStorage.getItem('token')}`,
-                },
-              })
-              .then(() => {
-                this.$swal.fire('Deleted!', 'School Year has been deleted.', 'success');
-                this.bind_data();
-                this.$Progress.finish();
-              })
-              .catch(() => {
-                this.$swal.fire('Failed!', 'There was something wrong.', 'warning');
-                this.$Progress.fail();
-              });
-          }
-        });
-    },
-    editSchoolYear(id) {
-      this.$http
-        .get('/api/school-year/' + id, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        })
-        .then((response) => {
-          this.form.id = response.data.data.id;
-          this.form.start_year = response.data.data.start_year;
-          this.form.end_year = response.data.data.end_year;
-        })
-        .catch((errors) => {
-          this.errors.record(errors.response.data.errors);
-        });
-    },
-    updateSchoolYear() {
-      var id = this.form.id;
-      console.log(id);
-      let self = this;
-      var axios = require('axios');
-      var data = this.form;
-      var config = {
-        method: 'put',
-        url: '/api/school-year/' + id,
-        headers: {
-          Authorization: 'Bearer ' + localStorage.getItem('token'),
-        },
-        data: data,
-      };
-      self.$Progress.start();
-      axios(config)
-        .then(function () {
-          self.$toaster.success('School Year Updated Successfuly!');
-          self.$nextTick(() => {
-            self.$bvModal.hide('schoolYearEditModal');
-          });
-          self.bind_data();
-          self.$Progress.finish();
-        })
-        .catch(function (errors) {
-          self.errors.record(errors.response.data.errors);
-          self.$Progress.fail();
-        });
-    },
-    addResetModal() {
-      this.form.start_year = 'start_year';
-      this.form.end_year = 'end_year';
-      this.form.start_year = '';
-      this.form.end_year = '';
-      this.errors.clear('start_year');
-      this.errors.clear('end_year');
-    },
-    editResetModal() {
-      this.form.start_year = '';
-      this.form.end_year = '';
-      this.errors.clear('start_year');
-      this.errors.clear('end_year');
     },
     on_filtered(filtered_items) {
       this.refresh_table(filtered_items.length);

@@ -47,10 +47,16 @@ class SchoolYearController extends Controller
         $user = $user->role;
         if($user=='admin'){
             $data = $request->validate([
-                'start_year' => 'required|string',
-                'end_year' => 'required|string',
+                'start_year' => 'required|string|digits:4',
+                'end_year' => 'required|string|digits:4',
             ]);
-            if($request->start_year>=$request->end_year){
+            $year = SchoolYear::where('start_year',$data['start_year'])->where('end_year',$data['end_year'])->get();
+            if($year){
+                throw ValidationException::withMessages([
+                    'start_year' => 'This school year combination is already added in our record. Please use another combination.'
+                ]);
+            }
+            else if($request->start_year>=$request->end_year){
                  throw ValidationException::withMessages([
                     'start_year' => 'The starting year should be lesser than the end year.'
                 ]);
@@ -118,8 +124,8 @@ class SchoolYearController extends Controller
         if($user=='admin'){
             
             $data = $request->validate([
-                'start_year' => 'required|string',
-                'end_year' => 'required|string',
+                'start_year' => 'required|string|digits:4',
+                'end_year' => 'required|string|digits:4',
             ]);
             if($request->start_year>=$request->end_year){
                  throw ValidationException::withMessages([

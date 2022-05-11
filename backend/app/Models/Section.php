@@ -13,4 +13,12 @@ class Section extends Model
     protected $fillable = [
         'section',
     ];
+    public function assign()
+    {
+        return $this->hasMany(Assign::class);
+    }
+    public function student()
+    {
+        return $this->hasMany(Student::class);
+    }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController\AssignController;
 use GuzzleHttp\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -129,6 +130,11 @@ Route::group(['middleware'=>['auth:sanctum','verified']],function(){
     Route::get('/instructor/profile/{id}',[ProfileController::class,'show']);
     // Update instructor current login
     Route::put('/instructor/profile/{id}',[ProfileController::class,'update']);
+
+    // Create Assign
+    Route::post('/assign',[AssignController::class,'store']);
+    // Get all assign
+    Route::get('/assign',[AssignController::class,'index']);
 });
 
 

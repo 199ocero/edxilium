@@ -85,6 +85,17 @@ const routes = [
         }
     },
 
+    // Admin - Assign Routes
+    {
+        path: '/admin/assign',
+        name: 'adminAssign',
+        component: () => import(/* webpackChunkName: "components-tabs" */ '../views/master/admin/assign/index.vue'),
+        meta: {
+            requiresAuth:true,
+            is_admin: true
+        }
+    },
+
     // Instructor - Assign Routes
     {
         path: '/instructor/assign',

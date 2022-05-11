@@ -58,6 +58,7 @@ class StudentImport implements ToModel, WithHeadingRow, WithValidation
     {
         return [
             'student_id.required' => 'The student id field is required.',
+            'student_id.unique' => 'The student id has already been taken.',
             'first_name.required' => 'The first name field is required.',
             'middle_name.required' => 'The middle name field is required.',
             'last_name.required' => 'The last name field is required.',

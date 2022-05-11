@@ -14,4 +14,8 @@ class Subject extends Model
         'subject',
         'year_level',
     ];
+    public function assign()
+    {
+        return $this->hasMany(Assign::class);
+    }
 }

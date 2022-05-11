@@ -14,4 +14,8 @@ class SchoolYear extends Model
         'start_year',
         'end_year',
     ];
+    public function assign()
+    {
+        return $this->hasMany(Assign::class);
+    }
 }
