@@ -4,13 +4,10 @@
         <div class="header-container fixed-top">
             <header class="header navbar navbar-expand-sm">
                 <ul class="navbar-item theme-brand flex-row text-center">
-                    <li class="nav-item theme-logo">
-                        <router-link to="/">
-                            <img src="@/assets/images/logo.svg" class="navbar-logo" alt="logo" />
+                    <li class="nav-item">
+                        <router-link to="/" class="nav-link">
+                            <img src="@/assets/images/edxilium.svg" class="navbar-logo" alt="logo" style="width: 130px;" />
                         </router-link>
-                    </li>
-                    <li class="nav-item theme-text">
-                        <router-link to="/" class="nav-link"> iHelper </router-link>
                     </li>
                 </ul>
                 <div class="d-none horizontal-menu">
